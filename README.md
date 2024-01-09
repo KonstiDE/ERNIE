@@ -8,4 +8,14 @@ With a GDELT dataset, we try to analyse the interface of japanese media and inte
 international communities point of view.
 
 Cheers, Caipi.
-    
+
+
+## Installation
+To install the ERNIE repository and use the pipeline to model (GDELT) topics with it, clone this repository to your desired location. Make sure that you have enough storage space available (~1GB per 10.000 article sources) and execute the scripts in the order below:
+
+|  Script  |  Usage  |  Typical problems  |
+|---------|----------|--------------------|
+|TBA. |TBA. |TBA. |
+
+## Detailed explanation of different steps
+
