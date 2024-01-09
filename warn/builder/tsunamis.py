@@ -11,26 +11,31 @@ import geopandas as gpd
 import shutup
 shutup.please()
 
-def analyse_earthquakes():
-    files = os.listdir(cfg.warn_path_earthquakes())
+def analyse_tsunamis():
+    files = os.listdir(cfg.warn_path_tsunamis())
 
     ms = []
 
     for file in files:
-        with open(os.path.join(cfg.warn_path_earthquakes(), file)) as f:
+        with open(os.path.join(cfg.warn_path_tsunamis(), file)) as f:
             try:
                 j = json.loads(
                     f.read()
                     .replace("経度", "long")
                     .replace("緯度", "lat")
                     .replace("震源地", "epicenter_loc")
-                    .replace("震源深さ", "epicenter_depth")
-                    .replace("発生日時", "timestamp")
+                    .replace("深さ", "depth")
+                    .replace("発表:", "timestamp_announcement:")
+                    .replace("発生", "timestamp_occurence")
                     .replace("マグニチュード", "magnitude")
-                    .replace("最大震度", "maximum_intensity")
+                    .replace("最大", "largest")
+                    .replace("形態", "figure")
                     .replace("：", ": ")
-                    .replace("[EEW]", "")
                     .replace("km", "")
+                    .replace("[JISHIN]", "")
+                    .replace("ごく浅い", "2")
+                    .replace("不明", "-1")
+                    .replace("弱", "")
                 )
 
                 for i in range(len(j)):
@@ -49,13 +54,14 @@ def analyse_earthquakes():
 
     df["long"] = df["long"].astype(float)
     df["lat"] = df["lat"].astype(float)
+    df["depth"] = df["depth"].astype(float)
     df["magnitude"] = df["magnitude"].astype(float)
-    df["epicenter_depth"] = df["epicenter_depth"].astype(float)
+    df["largest"] = df["largest"].astype(float)
 
     df['geometry'] = gpd.points_from_xy(df['long'], df['lat'])
     df.set_geometry("geometry")
     df.set_crs("EPSG:4326")
 
-    df.to_file("earthquakes.gpkg")
+    df.to_file("tsunamis.gpkg")
 
     f.close()

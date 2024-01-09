@@ -37,11 +37,15 @@ if __name__ == '__main__':
         with open(os.path.join(cfg.gdelt_path_about(), csv_file)) as f:
             loop.set_postfix_str(csv_file.removesuffix(".csv"))
 
-            csv_content = csv.reader(f, delimiter=",")
-            next(csv_content)
-            csv_content = list(csv_content)
+            try:
+                csv_content = csv.reader(f, delimiter=",")
+                next(csv_content)
+                csv_content = list(csv_content)
 
-            chunk_size = 50
-            chunks = [csv_content[x:x + chunk_size] for x in range(0, len(csv_content), chunk_size)]
+                chunk_size = 32
+                chunks = [csv_content[x:x + chunk_size] for x in range(0, len(csv_content), chunk_size)]
 
-            joblib.Parallel(n_jobs=len(chunks))(joblib.delayed(extract_local)(chunk_content) for chunk_content in chunks)
+                joblib.Parallel(n_jobs=len(chunks))(
+                joblib.delayed(extract_local)(chunk_content) for chunk_content in chunks)
+            except Exception as _:
+                pass

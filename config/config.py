@@ -6,7 +6,9 @@ cfg = {
     "gdelt_from_src": "data/from/gdelt/",
     "gdelt_about_out": "data/out/about/",
     "gdelt_from_out": "data/out/from/",
-    "warn_earthquakes_src": "data/earthquakes/"
+    "warn_earthquakes_src": "data/earthquakes/",
+    "warn_tsunamis_src": "data/tsunamis/",
+    "warn_volcanos_src": "data/volcanos/"
 }
 
 def gdelt_path_about():
@@ -23,3 +25,9 @@ def gdelt_out_path_from():
 
 def warn_path_earthquakes():
     return os.path.join(cfg["base_path"], cfg["warn_earthquakes_src"])
+
+def warn_path_tsunamis():
+    return os.path.join(cfg["base_path"], cfg["warn_tsunamis_src"])
+
+def warn_path_volcanos():
+    return os.path.join(cfg["base_path"], cfg["warn_volcanos_src"])
