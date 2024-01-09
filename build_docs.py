@@ -9,7 +9,7 @@ from models.document import Document
 from tqdm import tqdm
 
 
-def extract_local(chunk_content):
+def extract_local(chunk_content, csv_file):
     for row in chunk_content:
 
         doc = Document(
@@ -19,14 +19,14 @@ def extract_local(chunk_content):
             lat=row[2],
             url=row[4],
             img_url=row[5],
-            title=row[5],
+            title=row[6],
             date=csv_file.removesuffix(".csv")
         )
         doc.extract()
         doc.save_document()
 
 
-if __name__ == '__main__':
+def build_docs():
     csvs_about = os.listdir(cfg.gdelt_path_about())
 
     loop = tqdm(range(len(csvs_about)))
@@ -46,6 +46,10 @@ if __name__ == '__main__':
                 chunks = [csv_content[x:x + chunk_size] for x in range(0, len(csv_content), chunk_size)]
 
                 joblib.Parallel(n_jobs=len(chunks))(
-                joblib.delayed(extract_local)(chunk_content) for chunk_content in chunks)
+                    joblib.delayed(extract_local)(chunk_content, csv_file) for chunk_content in chunks)
             except Exception as _:
                 pass
+
+
+if __name__ == '__main__':
+    build_docs()

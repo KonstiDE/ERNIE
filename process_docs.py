@@ -6,7 +6,8 @@ import config.config as cfg
 
 from berts.defaultBERT import init_bert
 
-if __name__ == '__main__':
+
+def process_docs():
     documents = os.listdir(cfg.gdelt_out_path_about())
 
     docs = []
@@ -15,8 +16,13 @@ if __name__ == '__main__':
         with open(os.path.join(cfg.gdelt_out_path_about(), doc_file), "rb") as d:
             document = pkl.load(d)
 
-            docs.append(document)
+            if document.main_content_present():
+                docs.append(document)
 
     df = pd.DataFrame([vars(doc) for doc in docs])
 
-    print(df)
+    init_bert(df)
+
+
+if __name__ == '__main__':
+    process_docs()
