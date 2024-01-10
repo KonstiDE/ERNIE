@@ -10,8 +10,9 @@ from tqdm import tqdm
 
 
 def extract_local(chunk_content, csv_file):
-    for row in chunk_content:
 
+    r = 1
+    for row in chunk_content:
         doc = Document(
             location=row[0],
             location_result_count=row[1],
@@ -19,11 +20,14 @@ def extract_local(chunk_content, csv_file):
             lat=row[2],
             url=row[4],
             img_url=row[5],
-            title=row[6],
-            date=csv_file.removesuffix(".csv")
+            src_file=csv_file,
+            src_line=r,
+            title=row[6]
         )
-        doc.extract()
-        doc.save_document()
+        res = doc.extract()
+        if res:
+            doc.save_document()
+        r += 1
 
 
 def build_docs(fetching_chunk_size=32):
@@ -44,7 +48,7 @@ def build_docs(fetching_chunk_size=32):
                 chunks = [csv_content[x:x + chunk_size] for x in range(0, len(csv_content), chunk_size)]
 
                 joblib.Parallel(n_jobs=len(chunks))(
-                    joblib.delayed(extract_local)(chunk_content, csv_file) for chunk_content in chunks)
+                    joblib.delayed(extract_local)(chunk_content, csv_file.removesuffix(".csv")) for chunk_content in chunks)
             except StopIteration as _:
                 pass
 
