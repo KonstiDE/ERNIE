@@ -26,7 +26,7 @@ def extract_local(chunk_content, csv_file):
         doc.save_document()
 
 
-def build_docs():
+def build_docs(fetching_chunk_size=32):
     csvs_about = os.listdir(cfg.gdelt_path_about())
 
     loop = tqdm(range(len(csvs_about)))
@@ -42,12 +42,12 @@ def build_docs():
                 next(csv_content)
                 csv_content = list(csv_content)
 
-                chunk_size = 32
+                chunk_size = fetching_chunk_size
                 chunks = [csv_content[x:x + chunk_size] for x in range(0, len(csv_content), chunk_size)]
 
                 joblib.Parallel(n_jobs=len(chunks))(
                     joblib.delayed(extract_local)(chunk_content, csv_file) for chunk_content in chunks)
-            except Exception as _:
+            except StopIteration as _:
                 pass
 
 
