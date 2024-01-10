@@ -8,8 +8,6 @@ import config.config as cfg
 
 import geopandas as gpd
 
-import shutup
-shutup.please()
 
 def analyse_volcanos():
     files = os.listdir(cfg.warn_path_volcanos())

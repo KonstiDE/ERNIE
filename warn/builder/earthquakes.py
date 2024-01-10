@@ -7,11 +7,12 @@ from json import JSONDecodeError
 import config.config as cfg
 
 import geopandas as gpd
+import pandas as pd
+import numpy as np
 
-import shutup
-shutup.please()
+from plotting.wrapper import wrap_plot as mplot
 
-def analyse_earthquakes():
+def analyse_earthquakes(to_file=False):
     files = os.listdir(cfg.warn_path_earthquakes())
 
     ms = []
@@ -39,9 +40,15 @@ def analyse_earthquakes():
                         jl[m.start() + 10] = "-"
                         j[i]["text"] = "".join(jl)
 
+                    for m in re.finditer('2024/', j[i]["text"]):
+                        jl = list(j[i]["text"])
+                        jl[m.start() + 10] = "-"
+                        j[i]["text"] = "".join(jl)
+
                     m = {key: value for key, value in zip(*[iter(j[i]["text"].replace(": ", " ").split())] * 2)}
 
                     ms.append(m)
+                    print(m)
             except JSONDecodeError as _:
                 pass
 
@@ -53,9 +60,21 @@ def analyse_earthquakes():
     df["epicenter_depth"] = df["epicenter_depth"].astype(float)
 
     df['geometry'] = gpd.points_from_xy(df['long'], df['lat'])
-    df.set_geometry("geometry")
+    df.set_geometry("geometry", inplace=True)
     df.set_crs("EPSG:4326")
 
-    df.to_file("earthquakes.gpkg")
+    if to_file:
+        df.to_file("earthquakes.gpkg")
 
     f.close()
+
+    df = pd.DataFrame(df)
+
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df["timestamp"] = df["timestamp"].dt.round('1d')
+
+    timestamp_data = df.groupby(by=["timestamp", "magnitude"])
+
+    print(timestamp_data.head())
+
+    mplot(timestamp_data["timestamp"], timestamp_data["maxmag"], color="orange", plot_type="line", grid="--")

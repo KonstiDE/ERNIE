@@ -14,11 +14,6 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 from umap import UMAP
 
-from preprocessing.preprocessing import (
-    clean,
-    save_preprocessed_as_text
-)
-
 def read_text(path: str):
     with open(path, "r") as f:
         lines = f.readlines()
