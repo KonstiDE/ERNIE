@@ -9,7 +9,7 @@ from models.document import Document
 from tqdm import tqdm
 
 
-def extract_local(chunk_content, csv_file):
+def extract_local(chunk_content, chunk_index, csv_file):
 
     r = 1
     for row in chunk_content:
@@ -21,7 +21,7 @@ def extract_local(chunk_content, csv_file):
             url=row[4],
             img_url=row[5],
             src_file=csv_file,
-            src_line=r,
+            src_line=chunk_index + r,
             title=row[6]
         )
         res = doc.extract()
@@ -48,10 +48,10 @@ def build_docs(fetching_chunk_size=32):
                 chunks = [csv_content[x:x + chunk_size] for x in range(0, len(csv_content), chunk_size)]
 
                 joblib.Parallel(n_jobs=len(chunks))(
-                    joblib.delayed(extract_local)(chunk_content, csv_file.removesuffix(".csv")) for chunk_content in chunks)
+                    joblib.delayed(extract_local)(chunk_content, (fetching_chunk_size * i), csv_file.removesuffix(".csv")) for i, chunk_content in enumerate(chunks))
             except StopIteration as _:
                 pass
 
 
 if __name__ == '__main__':
-    build_docs()
+    build_docs(fetching_chunk_size=8)
