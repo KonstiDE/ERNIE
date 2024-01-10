@@ -43,7 +43,7 @@ class Document:
             print("***Does not have real content***")
 
     def save_document(self, i="+", p=False):
-        with open(os.path.join(cfg.gdelt_out_path_about(), "df_pkl_{}".format(uuid.uuid4())), "wb+") as file:
+        with open(os.path.join(cfg.gdelt_out(), "df_pkl_{}".format(uuid.uuid4())), "wb+") as file:
             pkl.dump(self, file)
 
         if p:
