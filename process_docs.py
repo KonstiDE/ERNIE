@@ -6,6 +6,7 @@ import pandas as pd
 from bertopic.representation import BaseRepresentation
 from hdbscan import HDBSCAN
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from tqdm import tqdm
 from umap import UMAP
 
 import config.config as cfg
@@ -36,16 +37,29 @@ def preprocess_docs(
         stopwords_custom = []
     if stopwords_lang_codes is None:
         stopwords_lang_codes = ["en"]
-    documents = os.listdir(cfg.gdelt_out_path_about())
+
+    if os.path.isfile("preprocessed.txt"):
+        reply = input("There is already a preprocessed file, do you wnt to delete it? (y/n)")
+
+        if reply == "y":
+            os.remove("preprocessed.txt")
+            print("Deleted preprocessed.txt")
+
+    print("Building Dataframe...")
+    documents = os.listdir(cfg.gdelt_out())
 
     docs = []
 
-    for doc_file in documents:
-        with open(os.path.join(cfg.gdelt_out_path_about(), doc_file), "rb") as d:
+    loop = tqdm(documents)
+
+    for doc_file in loop:
+        with open(os.path.join(cfg.gdelt_out(), doc_file), "rb") as d:
             document = pkl.load(d)
 
             if document.main_content_present():
                 docs.append(document)
+
+            loop.set_postfix_str("Loaded document: {}".format(document.title))
 
     df = pd.DataFrame([vars(doc) for doc in docs])
 
@@ -114,4 +128,4 @@ def analyse_docs(
 
 
 if __name__ == '__main__':
-    analyse_docs()
+    preprocess_docs()

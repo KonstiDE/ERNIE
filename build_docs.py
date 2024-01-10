@@ -27,14 +27,12 @@ def extract_local(chunk_content, csv_file):
 
 
 def build_docs(fetching_chunk_size=32):
-    csvs_about = os.listdir(cfg.gdelt_path_about())
+    csvs_about = os.listdir(cfg.gdelt_src())
 
-    loop = tqdm(range(len(csvs_about)))
+    loop = tqdm(csvs_about)
 
-    for i in loop:
-        csv_file = csvs_about[i]
-
-        with open(os.path.join(cfg.gdelt_path_about(), csv_file)) as f:
+    for csv_file in loop:
+        with open(os.path.join(cfg.gdelt_src(), csv_file)) as f:
             loop.set_postfix_str(csv_file.removesuffix(".csv"))
 
             try:
