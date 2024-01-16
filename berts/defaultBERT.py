@@ -14,15 +14,14 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 from umap import UMAP
 
+
 def read_text(path: str):
     with open(path, "r") as f:
-        lines = f.readlines()
-        line_no_break = []
+        all_together = f.read()
+        doc_contents = all_together.split("\n~~~~~~~~~~~~~~~~caipi~~~~~~~~~~~~~~~~")
 
-        for line in lines:
-            line_no_break.append(line.replace("\n", ""))
+        return doc_contents
 
-        return line_no_break
 
 def analyse(preprocessed_file,
             river_app=False,
@@ -44,9 +43,8 @@ def analyse(preprocessed_file,
             ctfidf_model: TfidfTransformer | None = None,
             representation_model: BaseRepresentation | None = None,
             verbose: bool = False):
-
     if river_conf is None:
-        river_conf = {"chunk_size": 10}
+        river_conf = {"chunk_size": 1000}
 
     try:
         river_chunk = river_conf["chunk_size"]
@@ -83,8 +81,9 @@ def analyse(preprocessed_file,
             topic_model.partial_fit(docs)
             topic_collection.extend(topic_model.topics_)
             c += river_chunk
-            print("Embedded and transformed " + str(c) + " docs")
+            print("Embedded " + str(c) + " docs")
 
+        print("Transforming now...")
         topics, probs = topic_model.transform(cleaned_texts)
 
     else:
@@ -99,25 +98,24 @@ def analyse(preprocessed_file,
 
 
 def analyse_bert(river_app=False,
-        river_conf=None,
-        language: str = "english",
-        top_n_words: int = 10,
-        n_gram_range: tuple[int, int] = (1, 1),
-        min_topic_size: int = 10,
-        nr_topics: int | str | None = None,
-        low_memory: bool = False,
-        calculate_probabilities: bool = False,
-        seed_topic_list: list[list[str]] | None = None,
-        zeroshot_topic_list: list[str] | None = None,
-        zeroshot_min_similarity: float = .7,
-        embedding_model: Any = None,
-        umap_model: UMAP | None = None,
-        hdbscan_model: HDBSCAN | None = None,
-        vectorizer_model: CountVectorizer | None = None,
-        ctfidf_model: TfidfTransformer | None = None,
-        representation_model: BaseRepresentation | None = None,
-        verbose: bool = False):
-
+                 river_conf=None,
+                 language: str = "english",
+                 top_n_words: int = 10,
+                 n_gram_range: tuple[int, int] = (1, 1),
+                 min_topic_size: int = 10,
+                 nr_topics: int | str | None = None,
+                 low_memory: bool = False,
+                 calculate_probabilities: bool = False,
+                 seed_topic_list: list[list[str]] | None = None,
+                 zeroshot_topic_list: list[str] | None = None,
+                 zeroshot_min_similarity: float = .7,
+                 embedding_model: Any = None,
+                 umap_model: UMAP | None = None,
+                 hdbscan_model: HDBSCAN | None = None,
+                 vectorizer_model: CountVectorizer | None = None,
+                 ctfidf_model: TfidfTransformer | None = None,
+                 representation_model: BaseRepresentation | None = None,
+                 verbose: bool = False):
     os.environ["CUDA_VISIBLE_DEVICES"] = "MIG-f29aed64-88d8-567c-9102-1b0a7b4e0b3a"
 
     analyse(
@@ -142,9 +140,3 @@ def analyse_bert(river_app=False,
         representation_model=representation_model,
         verbose=verbose
     )
-
-
-
-
-
-
