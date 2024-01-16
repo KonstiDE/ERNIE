@@ -1,27 +1,27 @@
 import re
 
-import JapaneseTokenizer
 import stopwordsiso
-import jieba
-import torch.cuda
+
+from sudachipy import tokenizer as sudachitok
+from sudachipy import dictionary
+
+mode = sudachitok.Tokenizer.SplitMode.A
 
 from polyglot.detect import Detector
-from konlpy.tag import Kkma
 from transformers import pipeline
 
-pipe = pipeline("translation", model="Helsinki-NLP/opus-mt-ja-en")
+# pipe = pipeline("translation", model="Helsinki-NLP/opus-mt-ja-en")
 
 from transformers import MarianMTModel, MarianTokenizer
 
-device = "cuda:0" if torch.cuda.is_available() else "cpu"
-print(device)
+# device = "cuda:0" if torch.cuda.is_available() else "cpu"
+# print(device)
 
-tokenizer = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-ja-en")
-model = MarianMTModel.from_pretrained("Helsinki-NLP/opus-mt-ja-en")
-model.to(device)
+# tokenizer = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-ja-en")
+# model = MarianMTModel.from_pretrained("Helsinki-NLP/opus-mt-ja-en")
+# model.to(device)
 
 from tqdm import tqdm
-
 
 call_emoji_free = lambda e: emoji_free_text(e)
 call_url_free = lambda u: url_free_text(u)
@@ -33,8 +33,6 @@ call_punct_free = lambda p: punct_free_text(p)
 call_digit_free = lambda d: digit_free_text(d)
 
 whitespace_exp = re.compile(r'\w+')
-#mecab_wrapper = JapaneseTokenizer.KyteaWrapper()
-#kkma = Kkma()
 
 
 def clean(
@@ -53,7 +51,6 @@ def clean(
         stopwords_custom=[],
         min_doc_length=5,
         duplicate_cleanup=True):
-
     if duplicates:
         df = df.drop_duplicates(subset="main_content")
         print("(1/10) Removed duplicates")
@@ -67,31 +64,39 @@ def clean(
         print("(2/10) Skipped Emojis\n")
 
     if stopwords:
-        stopwords = list(stopwordsiso.stopwords(["en"])) + stopwords_custom
+        stopwords = list(stopwordsiso.stopwords(['ja', 'en', 'zh_Hant', 'zh'])) + stopwords_custom
 
         documents_cleaned = []
         num_docs = len(df["main_content"].values.tolist())
 
+        tokenizer_obj = dictionary.Dictionary().create()
+
         with tqdm(df["main_content"], total=num_docs) as t:
             for doc_text in t:
-                doc_text_chunks = [doc_text[i:i + 512] for i in range(0, len(doc_text), 512)]
+                doc_text_chunks = [doc_text[i:i + 4096] for i in range(0, len(doc_text), 4096)]
 
-                complete = []
+                complete_doc = []
 
                 for doc_text_chunk in doc_text_chunks:
-                    tokens = tokenizer(doc_text_chunk, return_tensors="pt")
-                    tokens = {key: value.to(device) for key, value in tokens.items()}
-                    translation_ids = model.generate(**tokens)
-                    translation_ids = translation_ids.to("cpu")
-                    tokens = tokenizer.batch_decode(
-                        translation_ids[0],
-                        skip_special_tokens=True,
-                        clean_up_tokenization_spaces=False
-                    )
+                    tokens = [m.surface() for m in tokenizer_obj.tokenize(doc_text_chunk, mode=mode)]
+                    complete_doc.extend(tokens)
 
-                    tokens_cleaned = [word for word in tokens if word not in stopwords]
-                    tokens_cleaned = " ".join(tokens_cleaned)
-                    complete.append(tokens_cleaned)
+                tokens_cleaned = [word for word in complete_doc if word not in stopwords]
+                documents_cleaned.append(" ".join(tokens_cleaned))
+
+                #   tokens = tokenizer(doc_text_chunk, return_tensors="pt")
+                #   tokens = {key: value.to(device) for key, value in tokens.items()}
+                #   translation_ids = model.generate(**tokens)
+                #   translation_ids = translation_ids.to("cpu")
+                #   tokens = tokenizer.batch_decode(
+                #       translation_ids[0],
+                #       skip_special_tokens=True,
+                #       clean_up_tokenization_spaces=False
+                #   )
+                #
+                #   tokens_cleaned = [word for word in tokens if word not in stopwords]
+                #   tokens_cleaned = " ".join(tokens_cleaned)
+                #   complete.append(tokens_cleaned)
 
         df["main_content"] = documents_cleaned
         print("(3/10) Removed stopwords")
@@ -190,7 +195,7 @@ def save_preprocess(df):
 
 def save_preprocessed_as_text(df):
     df = df[df["main_content"].notna()]
-    with open("preprocessed.txt", "w+") as f:
+    with open("preprocessed.txt", "a+") as f:
         for cleaned_line in df["main_content"].values.tolist():
             f.write(cleaned_line + "\n~~~~~~~~~~~~~~~~caipi~~~~~~~~~~~~~~~~")
 
