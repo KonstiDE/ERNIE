@@ -19,6 +19,7 @@ class Document:
         self.src_line = src_line
         self.main_content = None
         self.html_content = None
+        self.cleaned_content = None
 
     def main_content_present(self):
         return self.main_content is not None

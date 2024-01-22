@@ -2,6 +2,7 @@ import os.path
 from typing import Any
 
 import numpy as np
+import scipy.sparse
 
 from bertopic import BERTopic
 from bertopic.representation import BaseRepresentation
@@ -13,6 +14,9 @@ from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 from umap import UMAP
+
+import shutup
+shutup.please()
 
 
 def read_text(path: str):
@@ -43,6 +47,8 @@ def analyse(preprocessed_file,
             ctfidf_model: TfidfTransformer | None = None,
             representation_model: BaseRepresentation | None = None,
             verbose: bool = False):
+
+    print("Checking Arguments...")
     if river_conf is None:
         river_conf = {"chunk_size": 1000}
 
@@ -51,8 +57,10 @@ def analyse(preprocessed_file,
     except KeyError as ke:
         raise Exception("Please provide the argument \"chunk_size: number\" in your river_conf map.")
 
+    print("Reading text...")
     cleaned_texts = read_text(preprocessed_file)
 
+    print("Initializing model")
     topic_model = BERTopic(
         language=language,
         top_n_words=top_n_words,
@@ -72,21 +80,28 @@ def analyse(preprocessed_file,
         representation_model=representation_model,
         verbose=verbose)
 
+    print("Strarting embedding process")
     if river_app:
         doc_chunks = [cleaned_texts[i:i + river_chunk] for i in range(0, len(cleaned_texts), river_chunk)]
 
         topic_collection = []
         c = 0
         for docs in doc_chunks:
-            topic_model.partial_fit(docs)
+            try:
+                print("Embedding the next " + str(river_chunk) + " docs...")
+                topic_model.partial_fit(docs)
+            except scipy.sparse.SparseEfficiencyWarning as sew:
+                pass
+
             topic_collection.extend(topic_model.topics_)
             c += river_chunk
-            print("Embedded " + str(c) + " docs")
+            print("Embedded " + str(c) + " docs.")
 
         print("Transforming now...")
         topics, probs = topic_model.transform(cleaned_texts)
 
     else:
+        print("Attempting to embed {} documents...".format(len(cleaned_texts)))
         topics, probs = topic_model.fit_transform(cleaned_texts)
 
     print(topics)
@@ -99,7 +114,7 @@ def analyse(preprocessed_file,
 
 def analyse_bert(river_app=False,
                  river_conf=None,
-                 language: str = "english",
+                 language: str = "multilingual",
                  top_n_words: int = 10,
                  n_gram_range: tuple[int, int] = (1, 1),
                  min_topic_size: int = 10,
@@ -116,7 +131,6 @@ def analyse_bert(river_app=False,
                  ctfidf_model: TfidfTransformer | None = None,
                  representation_model: BaseRepresentation | None = None,
                  verbose: bool = False):
-    os.environ["CUDA_VISIBLE_DEVICES"] = "MIG-f29aed64-88d8-567c-9102-1b0a7b4e0b3a"
 
     analyse(
         "preprocessed.txt",

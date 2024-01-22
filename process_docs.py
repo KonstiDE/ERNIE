@@ -2,12 +2,7 @@ import os
 import pickle as pkl
 from typing import Any
 
-# lang_dist = {'ja': 943685, 'en': 284204, 'id': 4268, 'zh_Hant': 21092, 'ru': 4288, 'de': 957, 'hi': 24558, 'zh': 23150,
-#  'ar': 7230, 'ko': 10457, 'es': 8074, 'ta': 189, 'pt': 2397, 'hu': 320, 'da': 75, 'it': 2594, 'fr': 3144, 'ro': 685,
-#  'th': 2032, 'no': 166, 'pl': 306, 'sq': 46, 'bg': 532, 'iw': 1279, 'el': 941, 'tr': 645, 'nl': 436, 'mk': 93,
-#  'uk': 523, 'kk': 13, 'sr': 263, 'ur': 98, 'mn': 288, 'lt': 189, 'cs': 138, 'hr': 199, 'vo': 22, 'gl': 24, 'sv': 50,
-#  'fi': 52, 'ml': 75, 'bn': 93, 'te': 9, 'fa': 126, 'ba': 14, 'lv': 25, 'crs': 23, 'hy': 26, 'vi': 74, 'mr': 37,
-#  'sl': 31, 'et': 2, 'un': 31, 'ms': 3, 'ca': 19, 'sk': 14, 'az': 5, 'is': 4, 'tt': 2, 'zzp': 1, 'pa': 3, 'nn': 1}
+
 
 import pandas as pd
 from bertopic.representation import BaseRepresentation
@@ -31,6 +26,7 @@ shutup.please()
 
 
 def preprocess_docs(
+        chunk_size=100000,
         duplicates=True,
         emojis=False,
         urls=True,
@@ -45,7 +41,6 @@ def preprocess_docs(
         stopwords_custom=None,
         min_doc_length=5,
         duplicate_cleanup=True):
-    os.environ["CUDA_VISIBLE_DEVICES"] = "MIG-f29aed64-88d8-567c-9102-1b0a7b4e0b3a"
 
     if stopwords_custom is None:
         stopwords_custom = []
@@ -59,10 +54,10 @@ def preprocess_docs(
             os.remove("preprocessed.txt")
             print("Deleted preprocessed.txt")
 
-    print("Building Dataframe in batches of 100000 docs...")
+    print("Building Dataframe in batches of {} docs...".format(chunk_size))
     documents = os.listdir(cfg.gdelt_out())
 
-    file_chunks = [documents[i:i + 100000] for i in range(0, len(documents), 100000)]
+    file_chunks = [documents[i:i + chunk_size] for i in range(0, len(documents), chunk_size)]
 
     c = 1
     for file_chunk in file_chunks:
@@ -84,23 +79,30 @@ def preprocess_docs(
 
         chunk_df = pd.DataFrame([vars(doc) for doc in docs])
 
-        if not os.path.isfile("preprocessed.txt"):
-            cleaned_df = clean(chunk_df,
-                               duplicates=duplicates,
-                               emojis=emojis,
-                               urls=urls,
-                               hashtags=hashtags,
-                               hashtags_content=hashtags_content,
-                               ats=ats,
-                               ats_content=ats_content,
-                               punctuation=punctuation,
-                               digits=digits,
-                               stopwords=stopwords,
-                               stopwords_lang_codes=stopwords_lang_codes,
-                               stopwords_custom=stopwords_custom,
-                               min_doc_length=min_doc_length,
-                               duplicate_cleanup=duplicate_cleanup)
-            save_preprocessed_as_text(cleaned_df)
+        cleaned_df = clean(chunk_df,
+                           duplicates=duplicates,
+                           emojis=emojis,
+                           urls=urls,
+                           hashtags=hashtags,
+                           hashtags_content=hashtags_content,
+                           ats=ats,
+                           ats_content=ats_content,
+                           punctuation=punctuation,
+                           digits=digits,
+                           stopwords=stopwords,
+                           stopwords_lang_codes=stopwords_lang_codes,
+                           stopwords_custom=stopwords_custom,
+                           min_doc_length=min_doc_length,
+                           duplicate_cleanup=duplicate_cleanup)
+
+        print("Applying cleaned text to chunk of documents...")
+        i = 0
+        for row in cleaned_df.rows:
+            docs[i].cleaned_content = row["cleaned_content"]
+            i += 1
+
+        save_preprocessed_as_text(cleaned_df)
+        c += 1
 
 
 def analyse_docs(
@@ -124,7 +126,6 @@ def analyse_docs(
         ctfidf_model: TfidfTransformer | None = None,
         representation_model: BaseRepresentation | None = None,
         verbose: bool = False):
-    os.environ["CUDA_VISIBLE_DEVICES"] = "MIG-f29aed64-88d8-567c-9102-1b0a7b4e0b3a"
 
     if BERT_key == "default":
         analyse_bert(
@@ -153,9 +154,9 @@ if __name__ == '__main__':
     preprocess_docs()
     # analyse_docs(
     #     river_app=False,
-    #     river_conf={"chunk_size": 1000},
-    #     nr_topics=10,
+    #     river_conf={"chunk_size": 10000},
+    #     nr_topics=200,
     #     umap_model=UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine'),
-    #     hdbscan_model=MiniBatchKMeans(n_clusters=10),
+    #     hdbscan_model=HDBSCAN(),
     #     vectorizer_model=OnlineCountVectorizer(ngram_range=(1, 1))
     # )

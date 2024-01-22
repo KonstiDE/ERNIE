@@ -51,6 +51,7 @@ def clean(
         stopwords_custom=[],
         min_doc_length=5,
         duplicate_cleanup=True):
+
     if duplicates:
         df = df.drop_duplicates(subset="main_content")
         print("(1/10) Removed duplicates")
