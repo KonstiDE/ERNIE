@@ -26,7 +26,7 @@ shutup.please()
 
 
 def preprocess_docs(
-        chunk_size=100000,
+        chunk_size=100,
         duplicates=True,
         emojis=False,
         urls=True,
@@ -96,10 +96,8 @@ def preprocess_docs(
                            duplicate_cleanup=duplicate_cleanup)
 
         print("Applying cleaned text to chunk of documents...")
-        i = 0
-        for row in cleaned_df.rows:
-            docs[i].cleaned_content = row["cleaned_content"]
-            i += 1
+        for index, row in cleaned_df.iterrows():
+            docs[index].set_cleaned_content(row["main_content"])
 
         save_preprocessed_as_text(cleaned_df)
         c += 1
@@ -151,12 +149,4 @@ def analyse_docs(
 
 
 if __name__ == '__main__':
-    preprocess_docs()
-    # analyse_docs(
-    #     river_app=False,
-    #     river_conf={"chunk_size": 10000},
-    #     nr_topics=200,
-    #     umap_model=UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine'),
-    #     hdbscan_model=HDBSCAN(),
-    #     vectorizer_model=OnlineCountVectorizer(ngram_range=(1, 1))
-    # )
+    pass
