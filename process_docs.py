@@ -1,3 +1,4 @@
+import io
 import os
 import pickle as pkl
 from typing import Any
@@ -17,7 +18,7 @@ import shutup
 
 import config.config as cfg
 
-from berts.defaultBERT import (
+from berts.freshBERT import (
     analyse_bert
 )
 from preprocessing.preprocessing import clean, save_preprocessed_as_text
@@ -67,6 +68,7 @@ def preprocess_docs(
         loop = tqdm(file_chunk)
 
         docs = []
+        files = []
 
         for doc_file in loop:
             with open(os.path.join(cfg.gdelt_out(), doc_file), "rb") as d:
@@ -74,10 +76,12 @@ def preprocess_docs(
 
                 if document.main_content_present():
                     docs.append(document)
+                    files.append(doc_file)
 
             d.close()
 
         chunk_df = pd.DataFrame([vars(doc) for doc in docs])
+        chunk_df["filename"] = files
 
         cleaned_df = clean(chunk_df,
                            duplicates=duplicates,
@@ -96,11 +100,13 @@ def preprocess_docs(
                            duplicate_cleanup=duplicate_cleanup)
 
         print("Applying cleaned text to chunk of documents...")
-        for index, row in cleaned_df.iterrows():
-            docs[index].set_cleaned_content(row["main_content"])
+        tiny_loop = tqdm(zip(cleaned_df["filename"].values.tolist(), cleaned_df["main_content"].values.tolist()))
 
-        save_preprocessed_as_text(cleaned_df)
-        c += 1
+        for filename, cleaned_content in tiny_loop:
+            with open(os.path.join(cfg.gdelt_out(), filename), "rb+") as d:
+                document = pkl.load(d)
+                document.set_cleaned_content(cleaned_content, d)
+                d.close()
 
 
 def analyse_docs(

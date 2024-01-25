@@ -56,7 +56,7 @@ def clean(
         df = df.drop_duplicates(subset="main_content")
         print("(1/10) Removed duplicates")
     else:
-        print("(1/10) Skipped duplicates ")
+        print("(1/10) Skipped duplicates")
 
     if emojis:
         df["main_content"].apply(call_emoji_free)
@@ -197,7 +197,7 @@ def save_preprocess(df):
 def save_preprocessed_as_text(df):
     df = df[df["main_content"].notna()]
     with open("preprocessed.txt", "a+") as f:
-        for cleaned_line in df["main_content"].values.tolist():
-            f.write(cleaned_line + "\n~~~~~~~~~~~~~~~~caipi~~~~~~~~~~~~~~~~")
+        for filename, cleaned_line in df["filename"].values.tolist(), df["main_content"].values.tolist():
+            f.write(filename + "~~~~~filename~~~~~" + cleaned_line + "\n~~~~~~~~~~~~~~~~caipi~~~~~~~~~~~~~~~~\n")
 
         f.close()

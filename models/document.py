@@ -22,6 +22,8 @@ class Document:
         self.html_content = None
         self.cleaned_content = None
 
+        self.topic = {}
+
     def _filename(self):
         return "df_pkl_{}_{}".format(self.src_file, self.src_line)
 
@@ -47,12 +49,10 @@ class Document:
             self.main_content, self.html_content = extract_main_text(self)
             return True
 
-    def set_cleaned_content(self, content):
-        with open(os.path.join(cfg.gdelt_out(), self._filename()), "wb+") as f:
-            if self.cleaned_content is not None:
-                self.cleaned_content = content
-                pkl.dump(self, f)
-            f.close()
+    def set_cleaned_content(self, content, f):
+        if self.cleaned_content is None:
+            self.cleaned_content = content
+            pkl.dump(self, f)
 
 
     def print_real_text(self):

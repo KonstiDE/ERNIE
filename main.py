@@ -15,8 +15,8 @@ if __name__ == '__main__':
 
     os.environ["CUDA_VISIBLE_DEVICES"] = "MIG-f29aed64-88d8-567c-9102-1b0a7b4e0b3a"
 
-    build_docs(fetching_chunk_size=16)
-    # preprocess_docs(chunk_size=1000)
+    # build_docs(fetching_chunk_size=16)
+    preprocess_docs(chunk_size=100000)
     # analyse_docs(
     #     river_app=False,
     #     river_conf={"chunk_size": 10000},

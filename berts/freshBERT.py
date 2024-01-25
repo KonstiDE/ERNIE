@@ -4,6 +4,8 @@ from typing import Any
 import numpy as np
 import scipy.sparse
 
+from berts.helper.bert_helper import read_text
+
 from bertopic import BERTopic
 from bertopic.representation import BaseRepresentation
 from bertopic.vectorizers import OnlineCountVectorizer
@@ -17,14 +19,6 @@ from umap import UMAP
 
 import shutup
 shutup.please()
-
-
-def read_text(path: str):
-    with open(path, "r") as f:
-        all_together = f.read()
-        doc_contents = all_together.split("\n~~~~~~~~~~~~~~~~caipi~~~~~~~~~~~~~~~~")
-
-        return doc_contents
 
 
 def analyse(preprocessed_file,
@@ -58,7 +52,7 @@ def analyse(preprocessed_file,
         raise Exception("Please provide the argument \"chunk_size: number\" in your river_conf map.")
 
     print("Reading text...")
-    cleaned_texts = read_text(preprocessed_file)
+    file_names, cleaned_texts = read_text(preprocessed_file)
 
     print("Initializing model")
     topic_model = BERTopic(
