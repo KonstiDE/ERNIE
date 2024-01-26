@@ -51,6 +51,8 @@ def build_docs(fetching_chunk_size=32):
                     joblib.delayed(extract_local)(chunk_content, (fetching_chunk_size * i), csv_file.removesuffix(".csv")) for i, chunk_content in enumerate(chunks))
             except StopIteration as _:
                 pass
+        # TODO optional break here to only build a ba(i)tch
+
 
 
 if __name__ == '__main__':

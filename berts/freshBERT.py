@@ -3,6 +3,11 @@ from typing import Any
 
 import numpy as np
 import scipy.sparse
+from tqdm import tqdm
+
+import pickle as pkl
+
+import config.config as cfg
 
 from berts.helper.bert_helper import read_text
 
@@ -104,6 +109,25 @@ def analyse(preprocessed_file,
     print(topic_model.get_topic_info())
 
     topic_model.save("model", save_embedding_model=False)
+
+    print("Applying topics to documents (in batches if > 100.000 docs)... This could take a while.")
+    file_chunks = [file_names[i:i + 100000] for i in range(0, len(file_names), 100000)]
+
+    c = 1
+    for file_chunk in file_chunks:
+        print("-" * 16)
+        print("Batch {} of {}".format(c, len(file_chunks)))
+        print("-" * 16)
+
+        print("Applying...")
+
+        for doc_file, topic in zip(file_chunk, topics):
+            with open(os.path.join(cfg.gdelt_out(), doc_file), "rb") as d:
+                document = pkl.load(d)
+                d.close()
+                document.set_topic(topic)
+
+        c += 1
 
 
 def analyse_bert(river_app=False,

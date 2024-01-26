@@ -9,4 +9,3 @@ if __name__ == '__main__':
         document = pkl.load(f)
 
         document.print_document()
-        document.compare_cleaned_and_main()

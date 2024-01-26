@@ -7,20 +7,6 @@ from sudachipy import dictionary
 
 mode = sudachitok.Tokenizer.SplitMode.A
 
-from polyglot.detect import Detector
-from transformers import pipeline
-
-# pipe = pipeline("translation", model="Helsinki-NLP/opus-mt-ja-en")
-
-from transformers import MarianMTModel, MarianTokenizer
-
-# device = "cuda:0" if torch.cuda.is_available() else "cpu"
-# print(device)
-
-# tokenizer = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-ja-en")
-# model = MarianMTModel.from_pretrained("Helsinki-NLP/opus-mt-ja-en")
-# model.to(device)
-
 from tqdm import tqdm
 
 call_emoji_free = lambda e: emoji_free_text(e)
@@ -79,7 +65,9 @@ def clean(
                 complete_doc = []
 
                 for doc_text_chunk in doc_text_chunks:
-                    tokens = [m.surface() for m in tokenizer_obj.tokenize(doc_text_chunk, mode=mode)]
+                    tokens = list(filter(lambda e: e != " ", [
+                        m.surface() for m in tokenizer_obj.tokenize(doc_text_chunk, mode=mode)
+                    ]))
                     complete_doc.extend(tokens)
 
                 tokens_cleaned = [word for word in complete_doc if word not in stopwords]
@@ -197,7 +185,7 @@ def save_preprocess(df):
 def save_preprocessed_as_text(df):
     df = df[df["main_content"].notna()]
     with open("preprocessed.txt", "a+") as f:
-        for filename, cleaned_line in df["filename"].values.tolist(), df["main_content"].values.tolist():
+        for filename, cleaned_line in zip(df["filename"].values.tolist(), df["main_content"].values.tolist()):
             f.write(filename + "~~~~~filename~~~~~" + cleaned_line + "\n~~~~~~~~~~~~~~~~caipi~~~~~~~~~~~~~~~~\n")
 
         f.close()

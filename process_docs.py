@@ -3,14 +3,9 @@ import os
 import pickle as pkl
 from typing import Any
 
-
-
 import pandas as pd
 from bertopic.representation import BaseRepresentation
-from bertopic.vectorizers import OnlineCountVectorizer
 from hdbscan import HDBSCAN
-from polyglot.detect import Detector
-from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from tqdm import tqdm
 from umap import UMAP
@@ -18,9 +13,8 @@ import shutup
 
 import config.config as cfg
 
-from berts.freshBERT import (
-    analyse_bert
-)
+from berts.freshBERT import analyse_bert as fresh_bert
+from berts.ultrafastBERT import analyse_bert as ultra_bert
 from preprocessing.preprocessing import clean, save_preprocessed_as_text
 
 shutup.please()
@@ -100,13 +94,18 @@ def preprocess_docs(
                            duplicate_cleanup=duplicate_cleanup)
 
         print("Applying cleaned text to chunk of documents...")
-        tiny_loop = tqdm(zip(cleaned_df["filename"].values.tolist(), cleaned_df["main_content"].values.tolist()))
-
-        for filename, cleaned_content in tiny_loop:
-            with open(os.path.join(cfg.gdelt_out(), filename), "rb+") as d:
+        for filename, cleaned_content in zip(
+                cleaned_df["filename"].values.tolist(), cleaned_df["main_content"].values.tolist()
+        ):
+            with open(os.path.join(cfg.gdelt_out(), filename), "rb") as d:
                 document = pkl.load(d)
-                document.set_cleaned_content(cleaned_content, d)
                 d.close()
+                document.set_cleaned_content(cleaned_content)
+
+        print("Done, now saving to preprocessing file...")
+        save_preprocessed_as_text(cleaned_df)
+        c += 1
+
 
 
 def analyse_docs(
@@ -132,7 +131,7 @@ def analyse_docs(
         verbose: bool = False):
 
     if BERT_key == "default":
-        analyse_bert(
+        fresh_bert(
             river_app=river_app,
             river_conf=river_conf,
             language=language,
@@ -152,6 +151,8 @@ def analyse_docs(
             ctfidf_model=ctfidf_model,
             representation_model=representation_model,
             verbose=verbose)
+    elif BERT_key == "ultrafast":
+        ultra_bert()
 
 
 if __name__ == '__main__':
