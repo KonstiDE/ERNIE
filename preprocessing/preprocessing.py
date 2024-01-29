@@ -17,8 +17,18 @@ call_at_free = lambda a: at_free_text(a)
 call_at_free_content = lambda ac: at_free_text_content(ac)
 call_punct_free = lambda p: punct_free_text(p)
 call_digit_free = lambda d: digit_free_text(d)
+call_linebreak_free = lambda d: linebreak_free_text(d)
 
-whitespace_exp = re.compile(r'\w+')
+from transformers import MarianTokenizer, MarianMTModel, MarianConfig
+
+mmodel = MarianMTModel.from_pretrained("Helsinki-NLP/opus-mt-jap-en")
+mtokenizer = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-jap-en")
+
+import fasttext
+from huggingface_hub import hf_hub_download
+
+model_path = hf_hub_download(repo_id="facebook/fasttext-language-identification", filename="model.bin")
+model = fasttext.load_model(model_path)
 
 
 def clean(
@@ -37,7 +47,6 @@ def clean(
         stopwords_custom=[],
         min_doc_length=5,
         duplicate_cleanup=True):
-
     if duplicates:
         df = df.drop_duplicates(subset="main_content")
         print("(1/10) Removed duplicates")
@@ -72,20 +81,6 @@ def clean(
 
                 tokens_cleaned = [word for word in complete_doc if word not in stopwords]
                 documents_cleaned.append(" ".join(tokens_cleaned))
-
-                #   tokens = tokenizer(doc_text_chunk, return_tensors="pt")
-                #   tokens = {key: value.to(device) for key, value in tokens.items()}
-                #   translation_ids = model.generate(**tokens)
-                #   translation_ids = translation_ids.to("cpu")
-                #   tokens = tokenizer.batch_decode(
-                #       translation_ids[0],
-                #       skip_special_tokens=True,
-                #       clean_up_tokenization_spaces=False
-                #   )
-                #
-                #   tokens_cleaned = [word for word in tokens if word not in stopwords]
-                #   tokens_cleaned = " ".join(tokens_cleaned)
-                #   complete.append(tokens_cleaned)
 
         df["main_content"] = documents_cleaned
         print("(3/10) Removed stopwords")
@@ -177,6 +172,10 @@ def digit_free_text(text):
     return re.sub(r'[0-9]', '', text)
 
 
+def linebreak_free_text(text):
+    return re.sub(r"(?<=[a-z])\r?\n", ' ', text)
+
+
 def save_preprocess(df):
     df = df[df["main_content"].notna()]
     df.to_csv("preprocessed.csv")
@@ -189,3 +188,16 @@ def save_preprocessed_as_text(df):
             f.write(filename + "~~~~~filename~~~~~" + cleaned_line + "\n~~~~~~~~~~~~~~~~caipi~~~~~~~~~~~~~~~~\n")
 
         f.close()
+
+
+# with tqdm(df["main_content"], total=num_docs) as t:
+# for doc_text in t:
+#     lang = str(model.predict(doc_text.replace("\n", " "))[0][0]).split("__")[2].split("_")[0]
+#
+#     if lang == "jpn":
+#         pass
+#
+# df["main_content"] = documents_cleaned
+# print("(3/10) Removed stopwords")
+#
+# exit(99)

@@ -1,4 +1,3 @@
-import io
 import os
 import pickle as pkl
 from typing import Any
@@ -13,8 +12,9 @@ import shutup
 
 import config.config as cfg
 
-from berts.freshBERT import analyse_bert as fresh_bert
-from berts.ultrafastBERT import analyse_bert as ultra_bert
+from berts.configurableBERT import analyse_bert as fresh_bert
+from berts.ultrafastBERT import analyse_bert as pre_bert
+
 from preprocessing.preprocessing import clean, save_preprocessed_as_text
 
 shutup.please()
@@ -64,13 +64,20 @@ def preprocess_docs(
         docs = []
         files = []
 
+        corrupted_files = 0
+
         for doc_file in loop:
             with open(os.path.join(cfg.gdelt_out(), doc_file), "rb") as d:
-                document = pkl.load(d)
+                try:
+                    document = pkl.load(d)
 
-                if document.main_content_present():
-                    docs.append(document)
-                    files.append(doc_file)
+                    if document.main_content_present():
+                        docs.append(document)
+                        files.append(doc_file)
+
+                except EOFError as _:
+                    corrupted_files += 1
+                    loop.set_postfix_str("Corrupted files: {}".format(corrupted_files))
 
             d.close()
 
@@ -109,7 +116,7 @@ def preprocess_docs(
 
 
 def analyse_docs(
-        BERT_key="default",
+        BERT_key=None,
         river_app=False,
         river_conf=None,
         language: str = "multilingual",
@@ -128,31 +135,29 @@ def analyse_docs(
         vectorizer_model: CountVectorizer | None = None,
         ctfidf_model: TfidfTransformer | None = None,
         representation_model: BaseRepresentation | None = None,
-        verbose: bool = False):
+        verbose: bool = True):
 
-    if BERT_key == "default":
-        fresh_bert(
-            river_app=river_app,
-            river_conf=river_conf,
-            language=language,
-            top_n_words=top_n_words,
-            n_gram_range=n_gram_range,
-            min_topic_size=min_topic_size,
-            nr_topics=nr_topics,
-            low_memory=low_memory,
-            calculate_probabilities=calculate_probabilities,
-            seed_topic_list=seed_topic_list,
-            zeroshot_topic_list=zeroshot_topic_list,
-            zeroshot_min_similarity=zeroshot_min_similarity,
-            embedding_model=embedding_model,
-            umap_model=umap_model,
-            hdbscan_model=hdbscan_model,
-            vectorizer_model=vectorizer_model,
-            ctfidf_model=ctfidf_model,
-            representation_model=representation_model,
-            verbose=verbose)
-    elif BERT_key == "ultrafast":
-        ultra_bert()
+    fresh_bert(
+        pretrained_model=BERT_key,
+        river_app=river_app,
+        river_conf=river_conf,
+        language=language,
+        top_n_words=top_n_words,
+        n_gram_range=n_gram_range,
+        min_topic_size=min_topic_size,
+        nr_topics=nr_topics,
+        low_memory=low_memory,
+        calculate_probabilities=calculate_probabilities,
+        seed_topic_list=seed_topic_list,
+        zeroshot_topic_list=zeroshot_topic_list,
+        zeroshot_min_similarity=zeroshot_min_similarity,
+        embedding_model=embedding_model,
+        umap_model=umap_model,
+        hdbscan_model=hdbscan_model,
+        vectorizer_model=vectorizer_model,
+        ctfidf_model=ctfidf_model,
+        representation_model=representation_model,
+        verbose=verbose)
 
 
 if __name__ == '__main__':

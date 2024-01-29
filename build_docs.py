@@ -30,7 +30,7 @@ def extract_local(chunk_content, chunk_index, csv_file):
         r += 1
 
 
-def build_docs(fetching_chunk_size=32):
+def build_docs(fetching_chunk_size=16):
     csvs_about = os.listdir(cfg.gdelt_src())
 
     loop = tqdm(csvs_about)
@@ -52,8 +52,3 @@ def build_docs(fetching_chunk_size=32):
             except StopIteration as _:
                 pass
         # TODO optional break here to only build a ba(i)tch
-
-
-
-if __name__ == '__main__':
-    build_docs(fetching_chunk_size=8)

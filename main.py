@@ -16,8 +16,11 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "MIG-f29aed64-88d8-567c-9102-1b0a7b4e0b3a"
 
     # build_docs(fetching_chunk_size=16)
-    # preprocess_docs(chunk_size=100000)
+    # preprocess_docs(chunk_size=1000)
     analyse_docs(
-        BERT_key="ultrafast"
+        BERT_key="davanstrien/chat_topics",
+        umap_model=UMAP(),
+        hdbscan_model=HDBSCAN(),
+        vectorizer_model=OnlineCountVectorizer(ngram_range=(1, 1)),
+        nr_topics=10
     )
-

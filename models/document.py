@@ -83,6 +83,7 @@ class Document:
     def save_document(self, i="+", p=False):
         with open(os.path.join(cfg.gdelt_out(), "df_pkl_{}_{}".format(self.src_file, self.src_line)), "wb+") as f:
             pkl.dump(self, f)
+            f.close()
 
         if p:
             print("[{}] Saved document: [{}]".format(i, self.print_document(re=True)))
