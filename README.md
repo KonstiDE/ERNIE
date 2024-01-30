@@ -30,6 +30,7 @@ The arguments explain as follows:
 The ERNIE pipeline is build in minimalistic way when it comes to execution. Open up the ``main.py`` file in the root directory. Only a
 few methods are needed to start a full analysis. Hereby, the we split the pipeline into smaller steps.
 
+---
 ### Data aquisition
 The input of the ERNIE pipeline only consists of the previous mentioned config folder `gdelt_src` where all gdelt `.csv` files are stored. For fetching and downloading the data, ERNIE provides the the following function: `build_docs`:
 
@@ -50,12 +51,32 @@ Fetched data will be written to a file `.pkl` file via [Pickle](https://docs.pyt
 | self.title                 | Title of the article                                                             |
 | self.src_file              | GDELTs `.csv` source file                                                        |
 | self.src_line              | Line within the GDELT `.csv` source file                                         |
-| -------------------------- | -------------------------------------------------------------------------------- |
+| ——————————— | ———————————————————————————————————— |
 | self.main_content          | Main content without HTML (might not be available depending on the urls status)  |
 | self.html_content          | Raw HTML content                                                                 |
 | self.cleaned_content       | Main content after preprocessing has been applied, else `None`                   |
 | self.topic_information     | Topic information (`map`) after modeling has been applied, else `None`           |
+---
 
 ### Data preprocessing
+Although we extracted the real content out of the article in the previous step, still, preprocessing is nessecarry in order to feed out topic model clean data. Herefore, ERNIE provides a fully customizable function for cleaning the documents. Again, open the `main.py` file and execute the `preprocess_docs()`. The following arguments can be passed to the function in order to skip or execute certain steps of the pre-processing:
+
+| Argument  | Description                   | Default Value  | Ignored if [...]
+|-----------|-------------------------------|----------------| ----------------------------- |
+| chunk_size | Size of a chunk that will be cleaned at once | 10.000 | - |
+| duplicates | Whether **duplicates** are sorted out at the start | True | - |
+| emojis | Whether **emojis** are removed | False | - |
+| urls | Whether **urls** are removed | True | - |
+| hashtags | Whether a **hashtag** itself is removed (#Obama -> Obama) | True | - |
+| hashtags_content | Whether the content of the hashtag is removed (#Obama -> *\*Empty\**) | True | `hashtags=False` |
+| ats | Whether an **@** itself is removed (@Trump -> Trump) | True | - |
+| ats_content | Whether the content of the hashtag is removed (@Trump -> *\*Empty\**) | True | `ats=False` |
+| punctuation | Whether characters of **, . ; ? !** are removed | True | - |
+| digits | Whether **digits** are removed | False | - |
+| stopwords | Whether **stopwords** are removed | True | - |
+| stopwords_lang_codes | List of language codes from `stopwordsiso` (expl: `["en", "de", "es"]`) | `list()` | - |
+| stopwords_custom | List of **custom stopwords that should be removed** | None | - |
+| min_doc_length | Minimal **length of a document** worthy to include after preprocessing has been applied | 5 | - |
+| duplicate_cleanup | Whether **duplicates** again are sorted out at the end | True | - |
 
 
