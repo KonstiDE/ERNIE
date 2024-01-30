@@ -74,9 +74,12 @@ Although we extracted the real content out of the article in the previous step, 
 | punctuation | Whether characters of **, . ; ? !** are removed | True | - |
 | digits | Whether **digits** are removed | False | - |
 | stopwords | Whether **stopwords** are removed | True | - |
-| stopwords_lang_codes | List of language codes from `stopwordsiso` (expl: `["en", "de", "es"]`) | `list()` | - |
+| stopwords_lang_codes | List of language codes from `stopwordsiso` (expl: `["en", "de", "es"]`) | `["en"]` | - |
 | stopwords_custom | List of **custom stopwords that should be removed** | None | - |
 | min_doc_length | Minimal **length of a document** worthy to include after preprocessing has been applied | 5 | - |
 | duplicate_cleanup | Whether **duplicates** again are sorted out at the end | True | - |
+
+After preprocessing your documents, you will find your document files containing a now completed field `cleaned_text` with the cleaned document text. Note that only there will be `cleaned_text` if `main_content` was available (if the url was not corrupt). The cleaned text can be overwritten if you change arguments of the `preprocess_docs()` method and rerun it. For avoiding mistakes, ERNIE will then ask you if you want to overwrite the already cleaned texts in the documents.
+---
 
 
