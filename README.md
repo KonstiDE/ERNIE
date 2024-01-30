@@ -86,7 +86,7 @@ After preprocessing your documents, you will find your document files containing
 
 ### Topic Modeling
 
-To execute and fit the fetched, pre-processed documents into a BERTopic model, call `process_docs()`. Again, the attributes of this mehtods are explained in detail in the following:
+To execute and fit the fetched, pre-processed documents into a BERTopic model, call `analyse_docs()`. Again, the attributes of this mehtods are explained in detail in the following:
 
 | Argument   | Description                   | Default Value  | Ignored if [...]              |
 |------------|-------------------------------|----------------| ----------------------------- |
@@ -94,7 +94,7 @@ To execute and fit the fetched, pre-processed documents into a BERTopic model, c
 | river_app  | Whether a [river approach](https://maartengr.github.io/BERTopic/getting_started/online/online.html) should be used | False | `BERT_key!=None` |
 | river_conf | A map for the configuration of river, at the moment only supports:<br>`{chunk_size: 10.000}` | `river_app=False` |
 
-Note that a ***river*** approach does not support every clusterin algorithm of BERTopic. You might for example not use clustering algorithms like `KMeansMiniBatch()` from [scikit-learn](https://scikit-learn.org/stable/) if using construction a river with `river_app=True`. Additionally, `process_docs()` inherits all arguments of the `betrtopic.BERTopic()` object to directly configure BERT inside ths function provided by ERNIE.
+Note that a ***river*** approach does not support every clusterin algorithm of BERTopic. You might for example not use clustering algorithms like `KMeansMiniBatch()` from [scikit-learn](https://scikit-learn.org/stable/) if using construction a river with `river_app=True`. Additionally, `analyse_docs()` inherits all arguments of the `betrtopic.BERTopic()` object to directly configure BERT inside ths function provided by ERNIE.
 
 
 
