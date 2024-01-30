@@ -2,8 +2,8 @@ import os.path
 
 cfg = {
     "base_path": "/home/s371513/ernie",
-    "gdelt_src": "data/about/gdelt/",
-    "gdelt_out": "data/out/about/",
+    "gdelt_src": "data/from/gdelt/",
+    "gdelt_out": "data/out/from/",
     "warn_earthquakes_src": "data/earthquakes/",
     "warn_tsunamis_src": "data/tsunamis/",
     "warn_volcanos_src": "data/volcanos/",
@@ -11,9 +11,14 @@ cfg = {
         "OPENBLAS_NUM_THREADS": "1",
         "MKL_NUM_THREADS": "1",
         "OMP_NUM_THREADS": "1",
-        "CUDA_VISIBLE_DEVICES": "MIG-f29aed64-88d8-567c-9102-1b0a7b4e0b3a"
+        "CUDA_VISIBLE_DEVICES": "MIG-f29aed64-88d8-567c-9102-1b0a7b4e0b3a",
+        " TOKENIZERS_PARALLELISM": "false"
     }
 }
+
+
+def base_path():
+    return cfg["base_path"]
 
 
 def gdelt_src():

@@ -1,7 +1,4 @@
 import os.path
-from typing import Any
-
-import scipy.sparse
 
 import pickle as pkl
 
@@ -10,15 +7,6 @@ import config.config as cfg
 from berts.helper.bert_helper import read_text
 
 from bertopic import BERTopic
-from bertopic.representation import BaseRepresentation
-from bertopic.vectorizers import OnlineCountVectorizer
-
-from hdbscan import HDBSCAN
-
-from sklearn.cluster import MiniBatchKMeans
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-
-from umap import UMAP
 
 import shutup
 
@@ -123,9 +111,12 @@ def analyse(pretrained_model,
 
         for doc_file, topic in zip(file_chunk, topics):
             with open(os.path.join(cfg.gdelt_out(), doc_file), "rb") as d:
-                document = pkl.load(d)
-                d.close()
-                document.set_topic(topic)
+                try:
+                    document = pkl.load(d)
+                    d.close()
+                    document.set_topic(topic)
+                except EOFError as _:
+                    pass
 
         c += 1
 
