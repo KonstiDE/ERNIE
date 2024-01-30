@@ -38,6 +38,6 @@ def warn_path_volcanos():
     return os.path.join(cfg["base_path"], cfg["warn_volcanos_src"])
 
 
-def write_os_environmentals():
-    for key, val in cfg["os_environs"]:
+def write_os_environments():
+    for key, val in cfg["os_environs"].items():
         os.environ[key] = val

@@ -90,11 +90,8 @@ def analyse(pretrained_model,
         topic_collection = []
         c = 0
         for docs in doc_chunks:
-            try:
-                print("Training / Embedding the next " + str(river_chunk) + " docs...")
-                topic_model.partial_fit(docs)
-            except scipy.sparse.SparseEfficiencyWarning as sew:
-                pass
+            print("Training / Embedding the next " + str(river_chunk) + " docs...")
+            topic_model.partial_fit(docs)
 
             topic_collection.extend(topic_model.topics_)
             c += river_chunk
@@ -106,7 +103,10 @@ def analyse(pretrained_model,
     else:
         cleaned_texts = cleaned_texts
         print("Attempting to transform {} documents...".format(len(cleaned_texts)))
-        topics, probs = topic_model.transform(cleaned_texts)
+        if pretrained_model is None:
+            topics, probs = topic_model.fit_transform(cleaned_texts)
+        else:
+            topics, probs = topic_model.transform(cleaned_texts)
 
     topic_model.save("model", save_embedding_model=False)
 
