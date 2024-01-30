@@ -59,27 +59,43 @@ Fetched data will be written to a file `.pkl` file via [Pickle](https://docs.pyt
 ---
 
 ### Data preprocessing
+
 Although we extracted the real content out of the article in the previous step, still, preprocessing is nessecarry in order to feed out topic model clean data. Herefore, ERNIE provides a fully customizable function for cleaning the documents. Again, open the `main.py` file and execute the `preprocess_docs()`. The following arguments can be passed to the function in order to skip or execute certain steps of the pre-processing:
 
-| Argument  | Description                   | Default Value  | Ignored if [...]
+| Argument  | Description                   | Default Value  | Ignored if [...]              |
 |-----------|-------------------------------|----------------| ----------------------------- |
 | chunk_size | Size of a chunk that will be cleaned at once | 10.000 | - |
-| duplicates | Whether **duplicates** are sorted out at the start | True | - |
-| emojis | Whether **emojis** are removed | False | - |
-| urls | Whether **urls** are removed | True | - |
-| hashtags | Whether a **hashtag** itself is removed (#Obama -> Obama) | True | - |
-| hashtags_content | Whether the content of the hashtag is removed (#Obama -> *\*Empty\**) | True | `hashtags=False` |
-| ats | Whether an **@** itself is removed (@Trump -> Trump) | True | - |
-| ats_content | Whether the content of the hashtag is removed (@Trump -> *\*Empty\**) | True | `ats=False` |
-| punctuation | Whether characters of **, . ; ? !** are removed | True | - |
-| digits | Whether **digits** are removed | False | - |
-| stopwords | Whether **stopwords** are removed | True | - |
+| duplicates | Whether **duplicates** are sorted out at the start | `True` | - |
+| emojis | Whether **emojis** are removed | `False` | - |
+| urls | Whether **urls** are removed | `True` | - |
+| hashtags | Whether a **hashtag** itself is removed (#Obama -> Obama) | `True` | - |
+| hashtags_content | Whether the content of the hashtag is removed (#Obama -> *\*Empty\**) | `True` | `hashtags=False` |
+| ats | Whether an **@** itself is removed (@Trump -> Trump) | `True` | - |
+| ats_content | Whether the content of the hashtag is removed (@Trump -> *\*Empty\**) | `True` | `ats=False` |
+| punctuation | Whether characters of **, . ; ? !** are removed | `True` | - |
+| digits | Whether **digits** are removed | `False` | - |
+| stopwords | Whether **stopwords** are removed | `True` | - |
 | stopwords_lang_codes | List of language codes from `stopwordsiso` (expl: `["en", "de", "es"]`) | `["en"]` | - |
-| stopwords_custom | List of **custom stopwords that should be removed** | None | - |
+| stopwords_custom | List of **custom stopwords that should be removed** | `list()` | - |
 | min_doc_length | Minimal **length of a document** worthy to include after preprocessing has been applied | 5 | - |
-| duplicate_cleanup | Whether **duplicates** again are sorted out at the end | True | - |
+| duplicate_cleanup | Whether **duplicates** again are sorted out at the end | `True` | - |
 
-After preprocessing your documents, you will find your document files containing a now completed field `cleaned_text` with the cleaned document text. Note that only there will be `cleaned_text` if `main_content` was available (if the url was not corrupt). The cleaned text can be overwritten if you change arguments of the `preprocess_docs()` method and rerun it. For avoiding mistakes, ERNIE will then ask you if you want to overwrite the already cleaned texts in the documents.
+After preprocessing your documents, you will find your document files containing a now completed field `cleaned_text` with the cleaned document text. Note that only there will be `cleaned_text` if `main_content` was available (if the url was not corrupt). The cleaned text can be overwritten if you change arguments of the `preprocess_docs()` method and rerun it. In order to avoid mistakes, ERNIE will then ask you if you want to overwrite the already cleaned texts in the documents.
+
 ---
+
+### Topic Modeling
+
+To execute and fit the fetched, pre-processed documents into a BERTopic model, call `process_docs()`. Again, the attributes of this mehtods are explained in detail in the following:
+
+| Argument   | Description                   | Default Value  | Ignored if [...]              |
+|------------|-------------------------------|----------------| ----------------------------- |
+| BERT_key   | Pretrained model from the Huggingface database (fresh model if `None`) | `None` | - |
+| river_app  | Whether a [river approach](https://maartengr.github.io/BERTopic/getting_started/online/online.html) should be used | False | `BERT_key!=None` |
+| river_conf | A map for the configuration of river, at the moment only supports:<br>`{chunk_size: 10.000}` | `river_app=False` |
+
+Note that a ***river*** approach does not support every clusterin algorithm of BERTopic. You might for example not use clustering algorithms like `KMeansMiniBatch()` from [scikit-learn](https://scikit-learn.org/stable/) if using construction a river with `river_app=True`.
+
+
 
 
