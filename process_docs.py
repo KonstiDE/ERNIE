@@ -12,7 +12,7 @@ import shutup
 
 import config.config as cfg
 
-from berts.configurableBERT import analyse_bert as fresh_bert
+from berts.configurableBERT import analyse_bert as conf_bert
 from berts.ultrafastBERT import analyse_bert as pre_bert
 
 from preprocessing.preprocessing import clean, save_preprocessed_as_text
@@ -21,7 +21,7 @@ shutup.please()
 
 
 def preprocess_docs(
-        chunk_size=100,
+        chunk_size=10000,
         duplicates=True,
         emojis=False,
         urls=True,
@@ -43,11 +43,13 @@ def preprocess_docs(
         stopwords_lang_codes = ["en"]
 
     if os.path.isfile("preprocessed.txt"):
-        reply = input("There is already a preprocessed file, do you wnt to delete it? (y/n)")
+        reply = input("Your current state of cleaned texts will be overwritten. Continue? (y/n)")
 
         if reply == "y":
             os.remove("preprocessed.txt")
             print("Deleted preprocessed.txt")
+        else:
+            exit(69)
 
     print("Building Dataframe in batches of {} docs...".format(chunk_size))
     documents = os.listdir(cfg.gdelt_out())
@@ -114,7 +116,6 @@ def preprocess_docs(
         c += 1
 
 
-
 def analyse_docs(
         BERT_key=None,
         river_app=False,
@@ -137,7 +138,7 @@ def analyse_docs(
         representation_model: BaseRepresentation | None = None,
         verbose: bool = True):
 
-    fresh_bert(
+    conf_bert(
         pretrained_model=BERT_key,
         river_app=river_app,
         river_conf=river_conf,
