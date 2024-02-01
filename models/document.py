@@ -30,6 +30,9 @@ class Document:
     def main_content_present(self):
         return self.main_content is not None
 
+    def get_topic(self):
+        return self.topic_information
+
     def compare_cleaned_and_main(self):
         print(self.main_content)
         print(self.cleaned_content)

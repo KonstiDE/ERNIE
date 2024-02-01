@@ -19,7 +19,7 @@ call_punct_free = lambda p: punct_free_text(p)
 call_digit_free = lambda d: digit_free_text(d)
 call_linebreak_free = lambda d: linebreak_free_text(d)
 
-from transformers import MarianTokenizer, MarianMTModel, MarianConfig
+from transformers import MarianTokenizer, MarianMTModel
 
 mmodel = MarianMTModel.from_pretrained("Helsinki-NLP/opus-mt-jap-en")
 mtokenizer = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-jap-en")
@@ -188,16 +188,3 @@ def save_preprocessed_as_text(df):
             f.write(filename + "~~~~~filename~~~~~" + cleaned_line + "\n~~~~~~~~~~~~~~~~caipi~~~~~~~~~~~~~~~~\n")
 
         f.close()
-
-
-# with tqdm(df["main_content"], total=num_docs) as t:
-# for doc_text in t:
-#     lang = str(model.predict(doc_text.replace("\n", " "))[0][0]).split("__")[2].split("_")[0]
-#
-#     if lang == "jpn":
-#         pass
-#
-# df["main_content"] = documents_cleaned
-# print("(3/10) Removed stopwords")
-#
-# exit(99)

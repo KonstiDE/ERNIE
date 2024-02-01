@@ -44,11 +44,14 @@ def build_docs(fetching_chunk_size=16):
                 next(csv_content)
                 csv_content = list(csv_content)
 
-                chunk_size = fetching_chunk_size
-                chunks = [csv_content[x:x + chunk_size] for x in range(0, len(csv_content), chunk_size)]
+                if len(csv_content) > 5:
+                    chunk_size = fetching_chunk_size
+                    chunks = [csv_content[x:x + chunk_size] for x in range(0, len(csv_content), chunk_size)]
 
-                joblib.Parallel(n_jobs=len(chunks))(
-                    joblib.delayed(extract_local)(chunk_content, (fetching_chunk_size * i), csv_file.removesuffix(".csv")) for i, chunk_content in enumerate(chunks))
+                    joblib.Parallel(n_jobs=len(chunks))(
+                        joblib.delayed(extract_local)(chunk_content, (fetching_chunk_size * i),
+                                                      csv_file.removesuffix(".csv")) for i, chunk_content in
+                        enumerate(chunks))
             except StopIteration as _:
                 pass
         # TODO optional break here to only build a ba(i)tch
