@@ -69,15 +69,22 @@ def clean(
 
         with tqdm(df["main_content"], total=num_docs) as t:
             for doc_text in t:
+                lang = str(
+                    model.predict(doc_text.main_content.replace("\n", " "))[0][0]
+                ).split("__")[2].split("_")[0]
+
                 doc_text_chunks = [doc_text[i:i + 4096] for i in range(0, len(doc_text), 4096)]
 
                 complete_doc = []
 
-                for doc_text_chunk in doc_text_chunks:
-                    tokens = list(filter(lambda e: e != " ", [
-                        m.surface() for m in tokenizer_obj.tokenize(doc_text_chunk, mode=mode)
-                    ]))
-                    complete_doc.extend(tokens)
+                if lang == "jpn" or lang == "zh" or lang == "zh_Hant":
+                    for doc_text_chunk in doc_text_chunks:
+                        tokens = list(filter(lambda e: e != " ", [
+                            m.surface() for m in tokenizer_obj.tokenize(doc_text_chunk, mode=mode)
+                        ]))
+                        complete_doc.extend(tokens)
+                elif lang == "hi":
+                    pass
 
                 tokens_cleaned = [word for word in complete_doc if word not in stopwords]
                 documents_cleaned.append(" ".join(tokens_cleaned))

@@ -10,6 +10,7 @@ from process_docs import preprocess_docs, analyse_docs
 from modeling.match_topics import match_topics_from_model
 from modeling.label_topics import label_topics
 from modeling.visualize_topic_over_time import visualize_topics
+from modeling.dump_topics import dump_topics_to_gpkg
 
 from language_dist import language_distribution
 
@@ -31,4 +32,5 @@ if __name__ == '__main__':
     # label_topics()
     # match_topics_from_model()
     # language_distribution()
-    visualize_topics()
+    # visualize_topics()
+    dump_topics_to_gpkg()

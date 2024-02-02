@@ -13,7 +13,7 @@ model = fasttext.load_model(model_path)
 
 
 def language_distribution():
-    files = os.listdir(cfg.gdelt_out())
+    files = os.listdir(os.path.join(cfg.gdelt_out(), "../about/"))
 
     lang_dist = {}
     corrupted_files = 0
@@ -21,7 +21,7 @@ def language_distribution():
     loop = tqdm(files)
 
     for file in loop:
-        with open(os.path.join(cfg.gdelt_out(), file), "rb") as f:
+        with open(os.path.join(os.path.join(cfg.gdelt_out(), "../about/"), file), "rb") as f:
             try:
                 document = pkl.load(f)
                 f.close()

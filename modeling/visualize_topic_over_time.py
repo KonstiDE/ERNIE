@@ -8,7 +8,6 @@ import config.config as cfg
 
 from datetime import datetime
 
-from bertopic import BERTopic
 from plotting.wrapper import wrap_plot as plot
 
 
@@ -69,5 +68,5 @@ def visualize_topics(chunk_size=100000):
                 lambda x: (x == topic).sum()).reset_index(
                 name="count")
             plot(group_holidays["src_file"], group_holidays["count"], plot_type="line",
-                 color="orange", legend=True, legenddata=["Topic \"{}\"".format(topic)])
-
+                 color="orange", legend=True, legenddata=["Topic \"{}\"".format(topic)],
+                 vertical_line_date=datetime(2023, 9, 15))
