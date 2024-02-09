@@ -111,12 +111,10 @@ def analyse(pretrained_model,
 
         for doc_file, topic in zip(file_chunk, topics):
             with open(os.path.join(cfg.gdelt_out(), doc_file), "rb") as d:
-                try:
-                    document = pkl.load(d)
-                    d.close()
-                    document.set_topic(topic)
-                except EOFError as _:
-                    pass
+                document = pkl.load(d)
+                d.close()
+                document.set_topic(topic)
+
 
         c += 1
 

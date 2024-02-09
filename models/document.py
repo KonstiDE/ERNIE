@@ -63,19 +63,18 @@ class Document:
             return True
 
     def set_cleaned_content(self, content):
-        with open(os.path.join(cfg.gdelt_out(), self._filename()), "wb+") as f:
+        with open(os.path.join(cfg.gdelt_out(), self._filename()), "wb") as f:
             if self.cleaned_content is None:
                 self.cleaned_content = content
                 pkl.dump(self, f)
                 f.close()
 
     def set_topic(self, topic):
-        with open(os.path.join(cfg.gdelt_out(), self._filename()), "wb+") as f:
+        with open(os.path.join(cfg.gdelt_out(), self._filename()), "wb") as f:
             if self.topic_information is None:
-                self.topic_information = topic
+                self.topic_information = str(topic)
                 pkl.dump(self, f)
                 f.close()
-
 
     def print_real_text(self):
         if self.main_content_present():
@@ -84,7 +83,7 @@ class Document:
             print("***Does not have real content***")
 
     def save_document(self, i="+", p=False):
-        with open(os.path.join(cfg.gdelt_out(), "df_pkl_{}_{}".format(self.src_file, self.src_line)), "wb+") as f:
+        with open(os.path.join(cfg.gdelt_out(), self._filename()), "wb+") as f:
             pkl.dump(self, f)
             f.close()
 

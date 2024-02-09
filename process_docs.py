@@ -72,6 +72,7 @@ def preprocess_docs(
             with open(os.path.join(cfg.gdelt_out(), doc_file), "rb") as d:
                 try:
                     document = pkl.load(d)
+                    d.close()
 
                     if document.main_content_present():
                         docs.append(document)
@@ -80,8 +81,6 @@ def preprocess_docs(
                 except EOFError as _:
                     corrupted_files += 1
                     loop.set_postfix_str("Corrupted files: {}".format(corrupted_files))
-
-            d.close()
 
         chunk_df = pd.DataFrame([vars(doc) for doc in docs])
         chunk_df["filename"] = files

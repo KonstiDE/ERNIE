@@ -134,6 +134,7 @@ def clean(
         print("(8/10) Skipped digits")
 
     df = df[df["main_content"] != ""]
+    df = df[df["main_content"] != " "]
     print("(9/10) Removed empties (default)")
 
     if duplicate_cleanup:

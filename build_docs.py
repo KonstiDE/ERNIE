@@ -54,4 +54,5 @@ def build_docs(fetching_chunk_size=16):
                         enumerate(chunks))
             except StopIteration as _:
                 pass
-        # TODO optional break here to only build a ba(i)tch
+
+        # TODO optional break here to only build one ba(i)tch
