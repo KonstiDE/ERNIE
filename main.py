@@ -2,6 +2,7 @@ from bertopic.vectorizers import OnlineCountVectorizer
 from hdbscan import HDBSCAN
 from umap import UMAP
 
+import repair
 from read_doc_test import doc_test_read
 
 import config.config as cfg
@@ -15,11 +16,10 @@ if __name__ == '__main__':
 
     # Data acquisition and preprocessing
     build_docs(fetching_chunk_size=16)
-    # preprocess_docs(chunk_size=100)
-
+    # preprocess_docs(chunk_size=1000)
+    #
     # Topic Modeling
     # analyse_docs(
-    #     BERT_key="davanstrien/chat_topics",
     #     umap_model=UMAP(),
     #     hdbscan_model=HDBSCAN(),
     #     vectorizer_model=OnlineCountVectorizer(ngram_range=(1, 1)),

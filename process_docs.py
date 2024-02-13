@@ -108,11 +108,13 @@ def preprocess_docs(
             with open(os.path.join(cfg.gdelt_out(), filename), "rb") as d:
                 document = pkl.load(d)
                 d.close()
-                document.set_cleaned_content(cleaned_content)
+                document.cleaned_content = cleaned_content
+                document.save_document()
 
         print("Done, now saving to preprocessing file...")
         save_preprocessed_as_text(cleaned_df)
         c += 1
+        break
 
 
 def analyse_docs(

@@ -56,3 +56,27 @@ def build_docs(fetching_chunk_size=16):
                 pass
 
         # TODO optional break here to only build one ba(i)tch
+
+
+def extract_single_trace(csv_file, csv_line):
+    with open(os.path.join(cfg.gdelt_src(), csv_file + ".csv")) as f:
+        csv_content = csv.reader(f, delimiter=",")
+        next(csv_content)
+        for i in range(csv_line - 1):
+            next(csv_content)
+
+        row_content = list(csv_content)[0]
+        doc = Document(
+            location=row_content[0],
+            location_result_count=row_content[1],
+            long=row_content[3],
+            lat=row_content[2],
+            url=row_content[4],
+            img_url=row_content[5],
+            src_file=csv_file,
+            src_line=csv_line,
+            title=row_content[6]
+        )
+
+        doc.extract()
+        doc.save_document()

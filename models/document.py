@@ -18,17 +18,14 @@ class Document:
 
         self.src_file = src_file
         self.src_line = src_line
-        self.main_content = None
-        self.html_content = None
-        self.cleaned_content = None
+        self.main_content = "None"
+        self.html_content = "None"
+        self.cleaned_content = "None"
 
-        self.topic_information = None
-
-    def _filename(self):
-        return "df_pkl_{}_{}".format(self.src_file, self.src_line)
+        self.topic_information = "None"
 
     def main_content_present(self):
-        return self.main_content is not None
+        return self.main_content != "None" and self.main_content is not None
 
     def get_topic(self):
         return self.topic_information
@@ -58,23 +55,9 @@ class Document:
         ))
 
     def extract(self):
-        if not os.path.isfile(os.path.join(cfg.gdelt_out(), self._filename())):
+        if not os.path.isfile(os.path.join(cfg.gdelt_out(), filename(self.src_file, self.src_line))):
             self.main_content, self.html_content = extract_main_text(self)
             return True
-
-    def set_cleaned_content(self, content):
-        with open(os.path.join(cfg.gdelt_out(), self._filename()), "wb") as f:
-            if self.cleaned_content is None:
-                self.cleaned_content = content
-                pkl.dump(self, f)
-                f.close()
-
-    def set_topic(self, topic):
-        with open(os.path.join(cfg.gdelt_out(), self._filename()), "wb") as f:
-            if self.topic_information is None:
-                self.topic_information = str(topic)
-                pkl.dump(self, f)
-                f.close()
 
     def print_real_text(self):
         if self.main_content_present():
@@ -83,9 +66,22 @@ class Document:
             print("***Does not have real content***")
 
     def save_document(self, i="+", p=False):
-        with open(os.path.join(cfg.gdelt_out(), self._filename()), "wb+") as f:
+        with open(os.path.join(cfg.gdelt_out(), filename(self.src_file, self.src_line)), "w+b") as f:
             pkl.dump(self, f)
             f.close()
 
         if p:
             print("[{}] Saved document: [{}]".format(i, self.print_document(re=True)))
+
+
+def filename(src_file, src_line):
+    return "df_pkl_{}_{}".format(src_file, src_line)
+
+
+def traceback(file_name):
+    temporary_split = file_name.replace("df_pkl_", "").split("_")
+
+    csv_file = "_".join([temporary_split[0], temporary_split[1], temporary_split[2]])
+    csv_line = int(temporary_split[3])
+
+    return csv_file, csv_line

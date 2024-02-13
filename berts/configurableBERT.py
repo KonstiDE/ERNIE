@@ -113,7 +113,8 @@ def analyse(pretrained_model,
             with open(os.path.join(cfg.gdelt_out(), doc_file), "rb") as d:
                 document = pkl.load(d)
                 d.close()
-                document.set_topic(topic)
+                document.topic_information = str(topic)
+                document.save_document()
 
 
         c += 1
