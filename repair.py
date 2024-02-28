@@ -29,6 +29,6 @@ def start_repair():
             os.remove(os.path.join(cfg.gdelt_out(), file))
 
             csv_file, csv_line = doc.traceback(file)
-            build.extract_single_trace(csv_file, csv_line)
+            build.extract_single_trace_df(csv_file, csv_line)
 
 

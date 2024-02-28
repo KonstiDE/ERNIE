@@ -102,6 +102,7 @@ def analyse(pretrained_model,
     file_chunks = [file_names[i:i + 100000] for i in range(0, len(file_names), 100000)]
 
     c = 1
+    corrupted_files = 0
     for file_chunk in file_chunks:
         print("-" * 16)
         print("Batch {} of {}".format(c, len(file_chunks)))
@@ -111,10 +112,15 @@ def analyse(pretrained_model,
 
         for doc_file, topic in zip(file_chunk, topics):
             with open(os.path.join(cfg.gdelt_out(), doc_file), "rb") as d:
-                document = pkl.load(d)
-                d.close()
-                document.topic_information = str(topic)
-                document.save_document()
+                try:
+                    document = pkl.load(d)
+                    d.close()
+                    document.topic_information = str(topic)
+                    document.save_document()
+                except EOFError as _:
+                    corrupted_files += 1
+
+        print("Found {} corrupted files in this batch.".format(corrupted_files))
 
 
         c += 1

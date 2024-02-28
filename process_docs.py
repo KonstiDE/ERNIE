@@ -114,7 +114,6 @@ def preprocess_docs(
         print("Done, now saving to preprocessing file...")
         save_preprocessed_as_text(cleaned_df)
         c += 1
-        break
 
 
 def analyse_docs(

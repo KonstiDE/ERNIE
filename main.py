@@ -1,3 +1,5 @@
+import os
+
 from bertopic.vectorizers import OnlineCountVectorizer
 from hdbscan import HDBSCAN
 from umap import UMAP
@@ -15,15 +17,15 @@ if __name__ == '__main__':
     cfg.write_os_environments()
 
     # Data acquisition and preprocessing
-    build_docs(fetching_chunk_size=16)
-    # preprocess_docs(chunk_size=1000)
+    build_docs(fetching_chunk_size=1024, global_knowledge_graph_format=True)
+    # preprocess_docs(chunk_size=100000)
     #
     # Topic Modeling
     # analyse_docs(
     #     umap_model=UMAP(),
     #     hdbscan_model=HDBSCAN(),
     #     vectorizer_model=OnlineCountVectorizer(ngram_range=(1, 1)),
-    #     nr_topics=10
+    #     nr_topics=128
     # )
     # label_topics()
     # match_topics_from_model()

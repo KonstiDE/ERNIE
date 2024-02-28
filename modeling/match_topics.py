@@ -13,13 +13,11 @@ from berts.helper.bert_helper import read_text
 
 def match_topics_from_model(chunk_size=100000):
     print("Loading topic model...")
-    topic_model = BERTopic.load(os.path.join(cfg.base_path(), "model"))
 
     if os.path.isfile(os.path.join(cfg.base_path(), "custom_topics.pkl")):
         with open(os.path.join(cfg.base_path(), "custom_topics.pkl"), 'rb') as f:
             print("Loading custom topics...")
             topic_dictionary = pkl.load(f)
-            topics = topic_model.topics_
 
             print("Reading texts...")
             file_names, _ = read_text("preprocessed.txt")
@@ -37,12 +35,12 @@ def match_topics_from_model(chunk_size=100000):
                 corrupted_files = 0
 
                 for topic_index, doc_file in enumerate(loop):
-                    with open(os.path.join("/home/s371513/ernie/data/out/about/", doc_file), "rb") as d:
+                    with open(os.path.join(cfg.gdelt_out(), doc_file), "rb") as d:
                         try:
                             document = pkl.load(d)
                             d.close()
-
-                            document.set_topic(topics[topic_index])
+                            document.topic_information = topic_dictionary[topic_index]
+                            document.save_document()
 
                         except EOFError as _:
                             corrupted_files += 1
