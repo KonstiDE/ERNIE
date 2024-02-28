@@ -17,7 +17,7 @@ hashtag_content_pattern = re.compile(r'(#\S+\b)')
 at_pattern = re.compile(r'(@)')
 at_content_pattern = re.compile(r'(@\S+\b)')
 
-punct_str = "!?｡。\"#$%&'():*+,-/;<=>@[\\]^_´`｛｜}~｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.―①①②③④⑤⑥／・◇"
+punct_str = "!?｡。\"#$%&'():*+,-/;<=>@[\\]^_´`｛｜}~｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.―①①②③④⑤⑥／・◇|°»«"
 punct_pattern = re.compile(r'[%s]+' % punct_str)
 
 digit_pattern = re.compile(r'[0-9]|２|０|６|９|５|３|４|１|７|８')
@@ -64,7 +64,7 @@ def clean(
         print("(2/10) Skipped Emojis\n")
 
     if stopwords:
-        stopwords = list(stopwordsiso.stopwords(["ja", "en", "zh_Hant", "zh", "yue", "ru", "ind", "ko"])) + \
+        stopwords = list(stopwordsiso.stopwords(["ja", "en", "zh", "ru", "ko", "el", "es", "de", "fr", "it"])) + \
                     stopwords_custom
 
         documents_cleaned = []

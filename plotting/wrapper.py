@@ -9,11 +9,11 @@ def wrap_plot(x_data, y_data, plot_type="line", color="#007acc", alpha=1, xticks
     fig.patch.set_facecolor('#0c1c23')
 
     if plot_type == "line":
-        ax.plot(x_data, y_data, color=color, alpha=alpha)
+        ax.plot(x_data, y_data, color=color, alpha=alpha, zorder=3)
     elif plot_type == "bar":
-        ax.bar(x_data, y_data, color=color, alpha=alpha)
+        ax.bar(x_data, y_data, color=color, alpha=alpha, zorder=3)
     elif plot_type == "scatter":
-        ax.scatter(x_data, y_data, color=color, alpha=alpha)
+        ax.scatter(x_data, y_data, color=color, alpha=alpha, zorder=3)
 
     ax.set_facecolor('#122229')
     ax.spines['left'].set_color('#FFFFFF')
@@ -32,7 +32,7 @@ def wrap_plot(x_data, y_data, plot_type="line", color="#007acc", alpha=1, xticks
         ax.set_xticklabels(xticks)
 
     if grid is not None:
-        plt.grid(color="#3C494F", linestyle=grid, linewidth=0.3)
+        plt.grid(color="#3C494F", linestyle=grid, linewidth=0.3, zorder=0)
 
     plt.xticks(rotation=45, ha='right', color="white")
     plt.yticks(color="white")
