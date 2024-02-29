@@ -19,6 +19,9 @@ def match_topics_from_model(chunk_size=100000):
             print("Loading custom topics...")
             topic_dictionary = pkl.load(f)
 
+            print(topic_dictionary)
+            print(len(topic_dictionary.keys()))
+
             print("Reading texts...")
             file_names, _ = read_text("preprocessed.txt")
 
@@ -37,10 +40,11 @@ def match_topics_from_model(chunk_size=100000):
                 for topic_index, doc_file in enumerate(loop):
                     with open(os.path.join(cfg.gdelt_out(), doc_file), "rb") as d:
                         try:
-                            document = pkl.load(d)
-                            d.close()
-                            document.topic_information = topic_dictionary[topic_index]
-                            document.save_document()
+                            if topic_index - 1 > 0:
+                                document = pkl.load(d)
+                                d.close()
+                                document.topic_information = topic_dictionary[int(document.topic_information)]
+                                document.save_document()
 
                         except EOFError as _:
                             corrupted_files += 1

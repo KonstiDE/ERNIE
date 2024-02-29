@@ -12,12 +12,14 @@ from plotting.wrapper import wrap_plot as plot
 
 
 def visualize_topics(chunk_size=100000):
+    # TODO, maybe also do a notebook here
+
     with open(os.path.join(cfg.base_path(), "custom_topics.pkl"), "rb") as t:
         custom_topics = pkl.load(t)
 
         dfs = []
 
-        documents = os.listdir(os.path.join(cfg.gdelt_out(), "../about/"))
+        documents = os.listdir(cfg.gdelt_out())
 
         file_chunks = [documents[i:i + chunk_size] for i in range(0, len(documents), chunk_size)]
 
@@ -38,9 +40,6 @@ def visualize_topics(chunk_size=100000):
                         document = pkl.load(d)
 
                         if document.topic_information is not None:
-                            # Only temporary attribute change, do not mess with the file!!
-                            document.topic_information = "spam" if int(document.topic_information) < 0 else custom_topics[document.topic_information]
-
                             docs.append(document)
 
                     except EOFError as _:

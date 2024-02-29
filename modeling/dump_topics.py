@@ -10,8 +10,8 @@ import config.config as cfg
 from tqdm import tqdm
 
 
-def dump_topics_to_gpkg(topic_to_filter=None):
-    files = os.listdir(os.path.join(cfg.gdelt_out(), "../about/"))
+def dump_gkg_to_gpkg():
+    files = os.listdir(cfg.gdelt_out())
 
     corrupted_files = 0
 
@@ -19,36 +19,47 @@ def dump_topics_to_gpkg(topic_to_filter=None):
 
     document_map = []
 
-    with open(os.path.join(cfg.base_path(), "custom_topics.pkl"), 'rb') as t:
-        print("Loading custom topics...")
-        topic_dictionary = pkl.load(t)
+    for c, file in enumerate(loop):
+        with open(os.path.join(os.path.join(cfg.gdelt_out()), file), "rb") as f:
+            try:
+                document = pkl.load(f)
+                f.close()
 
-        c = 0
-        for file in loop:
-            with open(os.path.join(os.path.join(cfg.gdelt_out(), "../about/"), file), "rb") as f:
-                try:
-                    document = pkl.load(f)
-                    f.close()
+                if document.topic_information is not None and \
+                        document.locations is not None and \
+                        document.source_name is not None and \
+                        document.themes is not None and \
+                        str(document.themes[0:3]).__contains__("NATURAL_DISASTER_"):
+                    if len(document.locations) > 0:
+                        location_split = document.locations[0].split("#")
+                        domain = document.source_name.split(".")[-1]
 
-                    if document.topic_information is not None:
-                        translated_topic = topic_dictionary[document.topic_information] if document.topic_information > 0 else "spam"
-                        document_map.append({
-                            "index": c,
-                            "longitude": document.long,
-                            "latitude": document.lat,
-                            "topic": translated_topic,
-                            "topic_index": document.topic_information
-                        })
+                        international_domains = ["com", "net", "org", "eu"]
+
+                        if location_split[2] == "JA":
+                            try:
+                                document_map.append({
+                                    "fid": c,
+                                    "date": document.date,
+                                    "src_country": document.source_name if domain in international_domains else domain,
+                                    "src_domain": document.source_name,
+                                    "target_country": location_split[2],
+                                    "latitude": float(location_split[5]),
+                                    "longitude": float(location_split[6]),
+                                    "topic": document.topic_information,
+                                    "trace_file": document.src_file,
+                                    "trace_line": document.src_line
+                                })
+                            except ValueError as _:
+                                pass
 
 
-                except EOFError as _:
-                    corrupted_files += 1
-                    loop.set_postfix_str("Corrupted files: {}".format(corrupted_files))
-
-            c += 1
+            except EOFError as _:
+                corrupted_files += 1
+                loop.set_postfix_str("Corrupted files: {}".format(corrupted_files))
 
     df = pd.DataFrame(document_map)
 
     geometry = [Point(xy) for xy in zip(df['longitude'], df['latitude'])]
     gdf = gpd.GeoDataFrame(df, geometry=geometry, crs="EPSG:4326")
-    gdf.to_file("topics.gpkg", driver="GPKG")
+    gdf.to_file("disasters.gpkg", driver="GPKG")

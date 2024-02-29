@@ -21,7 +21,7 @@ def extract_local_gn(chunk_content, chunk_index, json_file):
             src_file=json_file,
             date=y["DATE"],
             url=y["DocumentIdentifier"],
-            source_name=y["SourceCommonName"],
+            source_name=y["SourceCommonName"] if "SourceCommonName" in y else None,
             counts=y["V2Counts"] if "V2Counts" in y else None,
             themes=y["V2Themes"] if "V2Themes" in y else None,
             locations=y["V2Locations"] if "V2Locations" in y else None,

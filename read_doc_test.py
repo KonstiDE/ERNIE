@@ -1,8 +1,5 @@
 import os.path
 import pickle as pkl
-import random
-
-from tqdm import tqdm
 
 import config.config as cfg
 
