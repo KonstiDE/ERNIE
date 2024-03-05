@@ -29,18 +29,20 @@ def dump_gkg_to_gpkg():
                         document.locations is not None and \
                         document.source_name is not None and \
                         document.themes is not None and \
-                        str(document.themes[0:3]).__contains__("NATURAL_DISASTER_"):
+                        str(document.themes[0:3]).__contains__("NATURAL_DISASTER_") and \
+                        document.url is not None:
                     if len(document.locations) > 0:
                         location_split = document.locations[0].split("#")
                         domain = document.source_name.split(".")[-1]
 
-                        international_domains = ["com", "net", "org", "eu"]
+                        international_domains = ["com", "net", "org", "eu", "info", "lat", "cat"]
 
                         if location_split[2] == "JA":
                             try:
                                 document_map.append({
                                     "fid": c,
                                     "date": document.date,
+                                    "url": document.url,
                                     "src_country": document.source_name if domain in international_domains else domain,
                                     "src_domain": document.source_name,
                                     "target_country": location_split[2],
@@ -62,4 +64,4 @@ def dump_gkg_to_gpkg():
 
     geometry = [Point(xy) for xy in zip(df['longitude'], df['latitude'])]
     gdf = gpd.GeoDataFrame(df, geometry=geometry, crs="EPSG:4326")
-    gdf.to_file("disasters.gpkg", driver="GPKG")
+    gdf.to_file("disasters_url.gpkg", driver="GPKG")

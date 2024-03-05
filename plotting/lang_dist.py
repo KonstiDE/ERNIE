@@ -14,15 +14,19 @@ def plot_lang_dist():
     }
 
     lang_dist_noto = {
-        'Chinese': 2509, 'Greek': 1236, 'Indonesian': 794, 'Kiluba': 16, 'hrv': 231, 'English': 9464, 'German': 1077,
-        'Italian': 808, 'Polish': 213, 'Slovenian': 74, 'guj': 34, 'Japanese': 1247, 'Arabic': 648, 'hye': 27,
-        'Russian': 844, 'Spanish': 2492, 'French': 815, 'Thai': 218, 'Korean': 1594, 'npi': 37, 'Ukrainian': 198,
-        'Finnish': 128, 'Bosnian': 350, 'tur': 685, 'lit': 96, 'ron': 421, 'bul': 254, 'als': 290, 'por': 666,
-        'swe': 154, 'mar': 54, 'ben': 152, 'urd': 43, 'zho': 238, 'mal': 140, 'nld': 93, 'hun': 163, 'heb': 75,
-        'mkd': 137, 'nob': 101, 'hin': 185, 'cat': 33, 'srp': 80, 'pes': 33, 'tam': 61, 'khk': 18, 'azj': 70, 'slk': 59,
-        'vie': 27, 'dan': 50, 'ces': 83, 'zsm': 39, 'est': 8, 'kaz': 5, 'lvs': 29, 'kan': 18, 'swh': 10,
-        'tel': 26, 'pan': 12, 'sin': 6, 'isl': 23, 'afr': 4, 'som': 4, 'oci': 2, 'nno': 1, 'glg': 1
+        'Tamil': 3836, 'Chinese': 14910, 'Japanese': 14533, 'Spanish': 10105, 'Turkish': 2720, 'English': 51589,
+        'Italian': 4027,
+        'Finnish': 610, 'French': 3945, 'German': 4383, 'Portuguese': 2734, 'Greek': 3680, 'kat': 31, 'hrv': 646,
+        'Thai': 1361, 'als': 806, 'bul': 925, 'pol': 952, 'slv': 284, 'ron': 1933, 'kor': 10464,
+        'guj': 63, 'hun': 951, 'ukr': 1353, 'zho': 1544, 'arb': 3042, 'hye': 272, 'srp': 268,
+        'mal': 785, 'Russian': 3952, 'npi': 151, 'swe': 417, 'azj': 284, 'cat': 178, 'ben': 704, 'bos': 940,
+        'hin': 605, 'ces': 590, 'nld': 567, 'lit': 420, 'nob': 282, 'heb': 434, 'mar': 150, 'urd': 125,
+        'slk': 293, 'vie': 140, 'mkd': 417, 'tam': 225, 'lvs': 93, 'pes': 152, 'khk': 107, 'dan': 162,
+        'zsm': 124, 'swh': 34, 'oci': 22, 'est': 41, 'kaz': 29, 'pan': 34, 'kan': 35, 'tel': 53,
+        'sin': 40, 'afr': 9, 'isl': 62, 'glg': 7, 'som': 12, 'pcm': 1, 'nno': 3, 'krc': 1, 'chv': 1,
+        'ast': 1
     }
+
 
     lang_dist = dict(sorted(lang_dist_noto.items(), key=lambda item: item[1]))
 
