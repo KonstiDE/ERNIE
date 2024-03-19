@@ -38,7 +38,7 @@ for(date in dates){
     p <- ggplot() +
         geom_spatvector(data = countries_c, mapping = aes(fill = count)) +
         scale_fill_gradientn(colors = turbo(50), limits = c(0, 1466)) +
-        ggtitle(m[x,]$date)
+        ggtitle(date)
 
     ggsave(paste0("news_", sub(" ", "_", as.character(date)), ".png"), p)
 }
