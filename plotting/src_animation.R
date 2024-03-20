@@ -79,5 +79,13 @@ tpc <- rbind(tpc, data.frame(
 tpc$TLD <- paste0(".", tolower(tpc$country_code))
 
 tpc <- left_join(pkg, tpc, by = join_by(TLD == TLD), relationship = "many-to-many")
+a = data.frame(tpc)
+
+tpc$gmt_offset <- as.numeric(tpc$gmt_offset)
+tpc$date <- tpc$date - tpc$gmt_offset
+
+
+
+
 
 
