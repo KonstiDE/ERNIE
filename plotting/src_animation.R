@@ -45,4 +45,39 @@ for(date in dates){
 
 
 # Bar plot for distribution of it #
+tpkg <- pkg
+tpkg$date <- lubridate::round_date(tpkg$date, unit = "hour")
+
+dateagg_us <- data.frame(
+    date = unique(tpkg$date),
+    count = aggregate(tpkg, by = "date", count = T)$agg_n
+)
+dateagg_us <- rbind(data.frame(
+    date = make_datetime(2024, 1, 1, 7),
+    count = 0
+), dateagg_us)
+
+ggplot() +
+    geom_line(data = dateagg_us, mapping = aes(x = date, y = count), stat = "identity")
+
+
+# Try to add time zones #
+time_zones <- read.csv("time_zone.csv")
+country_names <- read.csv("country.csv")
+
+tpc <- aggregate(gmt_offset ~ country_code, time_zones, median)
+tpc <- left_join(country_names, tpc, by = "country_code", unmatched = "drop")
+
+tpc$country_code[tpc$country_name == "Namibia"] <- "NA"
+tpc$gmt_offset[tpc$country_name == "Namibia"] <- "7200"
+tpc$country_code[tpc$country_code == "GB"] <- "UK"
+tpc <- rbind(tpc, data.frame(
+    country_code = "XK",
+    country_name = "Kosovo",
+    gmt_offset = "3600"
+))
+tpc$TLD <- paste0(".", tolower(tpc$country_code))
+
+tpc <- left_join(pkg, tpc, by = join_by(TLD == TLD), relationship = "many-to-many")
+
 

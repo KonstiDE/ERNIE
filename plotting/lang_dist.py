@@ -17,7 +17,7 @@ def plot_lang_dist():
         'Tamil': 3836, 'Chinese': 14910, 'Japanese': 14533, 'Spanish': 10105, 'Turkish': 2720, 'English': 51589,
         'Italian': 4027,
         'Finnish': 610, 'French': 3945, 'German': 4383, 'Portuguese': 2734, 'Greek': 3680, 'kat': 31, 'hrv': 646,
-        'Thai': 1361, 'als': 806, 'bul': 925, 'pol': 952, 'slv': 284, 'ron': 1933, 'kor': 10464,
+        'Thai': 1361, 'als': 806, 'bul': 925, 'pol': 952, 'slv': 284, 'ron': 1933, 'Korean': 10464,
         'guj': 63, 'hun': 951, 'ukr': 1353, 'zho': 1544, 'arb': 3042, 'hye': 272, 'srp': 268,
         'mal': 785, 'Russian': 3952, 'npi': 151, 'swe': 417, 'azj': 284, 'cat': 178, 'ben': 704, 'bos': 940,
         'hin': 605, 'ces': 590, 'nld': 567, 'lit': 420, 'nob': 282, 'heb': 434, 'mar': 150, 'urd': 125,
