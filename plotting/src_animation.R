@@ -79,10 +79,39 @@ tpc <- rbind(tpc, data.frame(
 tpc$TLD <- paste0(".", tolower(tpc$country_code))
 
 tpc <- left_join(pkg, tpc, by = join_by(TLD == TLD), relationship = "many-to-many")
-a = data.frame(tpc)
 
 tpc$gmt_offset <- as.numeric(tpc$gmt_offset)
-tpc$date <- tpc$date - tpc$gmt_offset
+tpc$date <- tpc$date - seconds(tpc$gmt_offset)
+tpc$date <- tpc$date + seconds(9 * 60 * 60)
+
+tpc <- tpc[order(tpc$date),]
+
+a = data.frame(tpc)
+
+end_date <- pkg[length(pkg$date)]$date
+start_date <- pkg[1]$date
+
+dates <- seq(from = start_date, to = end_date, by='15 mins')
+
+for(date in dates){
+    m <- tpc[tpc$date <= date]
+    maxdate <- m[length(m),]$date
+
+    agg <- data.frame(
+        NAME_0 = unique(m$NAME_0),
+        count = aggregate(m, by = "NAME_0", count = T)$agg_n
+    )
+
+    countries_c <- merge(countries, agg, all.x=TRUE, by.x = "NAME_0", by.y = "NAME_0")
+    countries_csf <- st_as_sf(countries_c)
+
+    p <- ggplot() +
+        geom_spatvector(data = countries_c, mapping = aes(fill = count)) +
+        scale_fill_distiller(palette = "YlGnBu", name="Amount of articles", trans = "log") +
+        ggtitle(paste0(hour(tt), minute(tt), second(tt), sep = ":"))
+
+    ggsave(paste0("news_", sub(" ", "_", as.character(date)), ".png"), p)
+}
 
 
 
