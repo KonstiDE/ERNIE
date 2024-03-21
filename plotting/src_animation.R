@@ -88,30 +88,34 @@ tpc <- tpc[order(tpc$date),]
 
 a = data.frame(tpc)
 
-end_date <- pkg[length(pkg$date)]$date
-start_date <- pkg[1]$date
+end_date <- tpc[length(tpc$date)]$date
+start_date <- tpc[1]$date
 
-dates <- seq(from = start_date, to = end_date, by='15 mins')
+dates <- seq(from = start_date, to = end_date, by='1 hours')
 
-for(date in dates){
-    m <- tpc[tpc$date <= date]
-    maxdate <- m[length(m),]$date
+suppressWarnings({
+    for(date in dates){
+        m <- tpc[tpc$date <= date]
 
-    agg <- data.frame(
-        NAME_0 = unique(m$NAME_0),
-        count = aggregate(m, by = "NAME_0", count = T)$agg_n
-    )
+        agg <- data.frame(
+            NAME_0 = unique(m$NAME_0),
+            count = aggregate(m, by = "NAME_0", count = T)$agg_n
+        )
 
-    countries_c <- merge(countries, agg, all.x=TRUE, by.x = "NAME_0", by.y = "NAME_0")
-    countries_csf <- st_as_sf(countries_c)
+        countries_c <- merge(countries, agg, all.x=TRUE, by.x = "NAME_0", by.y = "NAME_0")
+        countries_csf <- st_as_sf(countries_c)
 
-    p <- ggplot() +
-        geom_spatvector(data = countries_c, mapping = aes(fill = count)) +
-        scale_fill_distiller(palette = "YlGnBu", name="Amount of articles", trans = "log") +
-        ggtitle(paste0(hour(tt), minute(tt), second(tt), sep = ":"))
+        p <- ggplot() +
+            geom_spatvector(data = countries_c, mapping = aes(fill = count)) +
+            scale_fill_distiller(palette = "YlGnBu", name="Amount of articles", trans = "log", limits = c(1, 1000)) +
+            ggtitle(paste(
+              paste(day(date), ". Januar", year(date)),
+              paste(hour(date), "00", sep = ":")
+            ))
 
-    ggsave(paste0("news_", sub(" ", "_", as.character(date)), ".png"), p)
-}
+        ggsave(paste0("news_", sub(" ", "_", as.character(date)), ".png"), p)
+    }
+})
 
 
 
