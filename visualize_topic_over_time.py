@@ -1,25 +1,22 @@
 import os
 import pickle as pkl
+import sys
 
 import pandas as pd
 from tqdm import tqdm
 
-import config.config as cfg
-
-from datetime import datetime
-
 from plotting.wrapper import wrap_plot as plot
+
+import models
 
 
 def visualize_topics(chunk_size=100000):
-    # TODO, maybe also do a notebook here
-
-    with open(os.path.join(cfg.base_path(), "custom_topics.pkl"), "rb") as t:
+    with open(os.path.join("custom_topics.pkl"), "rb") as t:
         custom_topics = pkl.load(t)
 
         dfs = []
 
-        documents = os.listdir(cfg.gdelt_out())
+        documents = os.listdir("data/out/noto")
 
         file_chunks = [documents[i:i + chunk_size] for i in range(0, len(documents), chunk_size)]
 
@@ -35,7 +32,7 @@ def visualize_topics(chunk_size=100000):
             corrupted_files = 0
 
             for doc_file in loop:
-                with open(os.path.join(os.path.join(cfg.gdelt_out(), "../about/"), doc_file), "rb") as d:
+                with open(os.path.join("data/out/noto", doc_file), "rb") as d:
                     try:
                         document = pkl.load(d)
 
@@ -55,9 +52,8 @@ def visualize_topics(chunk_size=100000):
 
         df = pd.concat(dfs)
 
-        df["src_file"] = df["src_file"].str.replace("_1d", "")
-        df["src_file"] = pd.to_datetime(df["src_file"], format="%Y-%m-%d_%H-%M-%S")
-        df["src_file"] = df["src_file"].dt.round('1d')
+        df["date"] = pd.to_datetime(df["date"], format="%Y%m%d%H%M%S")
+        df["date"] = df["date"].dt.round('1d')
 
         while True:
             print(set(custom_topics.values()))
@@ -67,5 +63,8 @@ def visualize_topics(chunk_size=100000):
                 lambda x: (x == topic).sum()).reset_index(
                 name="count")
             plot(group_holidays["src_file"], group_holidays["count"], plot_type="line",
-                 color="orange", legend=True, legenddata=["Topic \"{}\"".format(topic)],
-                 vertical_line_date=datetime(2023, 9, 15))
+                 color="orange", legend=True, legenddata=["Topic \"{}\"".format(topic)])
+
+
+if __name__ == '__main__':
+    visualize_topics()
