@@ -32,13 +32,14 @@ few methods are needed to start a full analysis. Hereby, the we split the pipeli
 
 ---
 ### Data aquisition
-The input of the ERNIE pipeline only consists of the previous mentioned config folder `gdelt_src` where all gdelt `.csv` files are stored. For fetching and downloading the data, ERNIE provides the the following function: `build_docs`:
+The input of the ERNIE pipeline only consists of the previous mentioned config folder `gdelt_src` where all gdelt `.csv` files are stored. For fetching and downloading the data, ERNIE provides the the following function: `build_docs()`:
 
 | Argument  | Description                   | Default Value  |
 |-----------|-------------------------------|----------------|
 | fetching_chunk_size   | Parallelizes the fetching<br> (8, 16, 32 recommended)       | 16  |
+| global_knowledge_graph_format   | `boolean` if the gkg format is underlying         | `False`  |
 
-Fetched data will be written to a file `.pkl` file via [Pickle](https://docs.python.org/3/library/pickle.html) and saved to `gdelt_out` directory. Each file represents one article fetched and can be traced back via the filename and the also in the name included line from the original `.csv` file. In case you want to look inside of the file yourself, load it with pickle (`pkl.load()`) and internally declare it as an instance of the `document.Document()` object. The following table describes the `Document` object and its attributes in detail:
+Fetched data will be written to a file `.pkl` file via [Pickle](https://docs.python.org/3/library/pickle.html) and saved to `gdelt_out` directory. Each file represents one article fetched and can be traced back via the filename and the also in the name included line from the original `.csv` file. In case you want to look inside of the file yourself, load it with pickle (`pkl.load()`) and internally declare it as an instance of the `document.Document()` object. The following table describes the **default** `Document` object and its attributes in detail:
 
 | Attribute                  | Description
 | -------------------------- | -------------------------------------------------------------------------------- |
@@ -56,6 +57,29 @@ Fetched data will be written to a file `.pkl` file via [Pickle](https://docs.pyt
 | self.html_content          | Raw HTML content                                                                 |
 | self.cleaned_content       | Main content after preprocessing has been applied, else `None`                   |
 | self.topic_information     | Topic information (`map`) after modeling has been applied, else `None`           |
+
+If you set the fetching option `global_knowledge_graph_format` to True, the Document will have different arguments:
+
+| Attribute                  | Description
+| -------------------------- | -------------------------------------------------------------------------------- |
+| self.date                  | Articles publication date, local time (`YYYYmmddHHMMss`)                         |
+| self.source_name           | Name of the source form where the article was taken                              |
+| self.url                   | Complete URL                                                                     |
+| self.translationInfo       | Information about possible translation to english (optional)                     |
+| self.counts                | GDELT pre-analysis of important counts (optional)                                |
+| self.locations             | GDELT pre-analysis of the **exact** location of the event (optional)             |
+| self.themes                | GDELT pre-analysis of the topic that the article is about (optional)             |
+| self.tone                  | GDELT pre-analysis of the tone that the article was written in (optional)        |
+| self.amounts               | GDELT pre-analysis of important numbers and digits                               |
+| ——————————— | ———————————————————————————————————— |
+| self.src_line              | GDELTs `.json` source file                                                       |
+| self.src_file              | Line within the GDELT `.json` source file                                        |
+| ——————————— | ———————————————————————————————————— |
+| self.main_content          | Main content without HTML (might not be available depending on the urls status)  |
+| self.html_content          | Raw HTML content                                                                 |
+| self.cleaned_content       | Main content after preprocessing has been applied, else `None`                   |
+| self.topic_information     | Topic information (`map`) after modeling has been applied, else `None`           |
+
 ---
 
 ### Data preprocessing
