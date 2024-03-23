@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import uuid
 import numpy as np
 
 from datetime import datetime
@@ -45,6 +46,8 @@ def wrap_plot(x_data, y_data, plot_type="line", color="#007acc", alpha=1, xticks
 
     if legend:
         plt.legend(legenddata)
+
+    plt.savefig("{}.png".format(uuid.uuid4()), fig, dpi=600)
 
     plt.tight_layout()
     plt.show()
@@ -96,6 +99,8 @@ def wrap_plots(x_data, y_datas, colors, plot_type="line", alpha=1, xticks=None, 
 
     if legend:
         plt.legend(legenddata)
+
+    plt.savefig("{}.png".format(uuid.uuid4()), fig, dpi=600)
 
     plt.tight_layout()
     plt.show()
