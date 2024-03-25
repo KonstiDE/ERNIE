@@ -29,7 +29,7 @@ def dump_gkg_to_gpkg():
                         document.locations is not None and \
                         document.source_name is not None and \
                         document.themes is not None and \
-                        str(document.themes).__contains__("NATURAL_DISASTER_") and \
+                        (str(document.themes).__contains__("NATURAL_DISASTER_EARTHQUAKE") or str(document.themes).__contains__("NATURAL_DISASTER_TSUNAMI") or str(document.themes).__contains__("NATURAL_DISASTER_FLOODS")) and \
                         document.url is not None:
                     if len(document.locations) > 0:
                         location_split = document.locations[0].split("#")
