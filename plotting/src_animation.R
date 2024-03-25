@@ -1,4 +1,4 @@
-setwd("C:/Users/Konstantin/Desktop/noto_plots_test")
+setwd("C:/Users/s371513/Desktop/noto_plots_test")
 
 library(ggplot2)
 library(terra)
@@ -18,6 +18,9 @@ countries_no_data <- vect("no_data.gpkg")
 
 pkg$date <- lubridate::as_datetime(pkg$date)
 pkg <- pkg[order(pkg$date),]
+
+end_date <- pkg[length(pkg$date)]$date
+start_date <- pkg[1]$date
 
 
 # Bar plot for distribution of it #
@@ -61,6 +64,7 @@ tpc$date <- tpc$date - seconds(tpc$gmt_offset)
 tpc$date <- tpc$date + seconds(9 * 60 * 60)
 
 tpc <- tpc[order(tpc$date),]
+rownames(tpc) <- NULL
 tpc$date <- round_date(tpc$date, unit = "hour")
 
 a = data.frame(tpc)
@@ -72,23 +76,26 @@ dates <- seq(from = start_date, to = end_date, by='1 hours')
 
 suppressWarnings({
     for(date in dates){
-        m <- tpc[tpc$date <= date]
+        m <- tpc[tpc$date <= date, ]
 
-        agg <- data.frame(
-            NAME_0 = unique(m$NAME_0),
-            count = aggregate(m, by = "NAME_0", count = T)$agg_n
-        )
+        agg <- aggregate(m, by = "NAME_0", count = T)[, c("NAME_0", "agg_n")]
 
         countries_c <- merge(countries, agg, all.x=TRUE, by.x = "NAME_0", by.y = "NAME_0")
-        countries_csf <- st_as_sf(countries_c)
 
         p <- ggplot() +
-            geom_spatvector(data = countries_c, mapping = aes(fill = count)) +
-            scale_fill_distiller(palette = "YlGnBu", name="Amount of articles", trans = "log", limits = c(1, 1000)) +
+            geom_spatvector(data = countries_c, mapping = aes(fill = agg_n)) +
+            scale_fill_gradientn(
+              colors = mako(1000),
+              name="Amount of articles",
+              trans = "log",
+              limits = c(1, 1000),
+              breaks = c(1, 10, 100, 1000)
+            ) +
             ggtitle(paste(
               paste(day(date), ". Januar", year(date)),
               paste(hour(date), "00", sep = ":")
             ))
+
 
         ggsave(paste0("news_", sub(" ", "_", as.character(date)), ".png"), p)
     }
