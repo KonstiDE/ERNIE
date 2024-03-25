@@ -120,6 +120,13 @@ To execute and fit the fetched, pre-processed documents into a BERTopic model, c
 
 Note that a ***river*** approach does not support every clusterin algorithm of BERTopic. You might for example not use clustering algorithms like `KMeansMiniBatch()` from [scikit-learn](https://scikit-learn.org/stable/) if using construction a river with `river_app=True`. Additionally, `analyse_docs()` inherits all arguments of the `betrtopic.BERTopic()` object to directly configure BERT inside ths function provided by ERNIE.
 
+---
 
+### Topic Labeling
 
+Once your documents have been fitted to your desired model, call `label_topics()`. This method walks through every topic-keyword created by BERT and lets you pick an appropriate name for the whole topic. Since this algorithm requires the actual judge of a human, ERNIE will prompt you with generated keywords by the model and you can type in the name of your desired topic. Topics with the same topic name, will be merged automatically. If you cannot create a significant label for some keywords, mark the topic as `spam` to point out its an outlier and should not be used any further. Here, we still recommend to do this process twice, as merging and changing topics can only be done by repeating the entire process. Hopefully, we will provide a script for doing this in a more convenient fashion in the future. Once finished, a `custom_topics.pkl` file will be created serving as a dictionary between the topic-index of BERT and your labels.
+
+### Topic matching
+
+Once you are fine with your topic-labels you created execute `match_topics_from_model()`. This will translate BERTs indices of topics to your labels and apply it to the original documents. Note that this process is of course reversable by just calling `analyse_docs()` again to get back you topic indices or to apply a different set of topics.
 
