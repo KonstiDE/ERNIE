@@ -1,3 +1,4 @@
+from modeling.dump_topics import dump_gkg_to_gpkg
 from visualize_topic_over_time import visualize_topics
 
 import config.config as cfg
@@ -20,8 +21,8 @@ if __name__ == '__main__':
     # label_topics()
     # match_topics_from_model()
     # language_distribution()
-    visualize_topics()
-    # dump_gkg_to_gpkg()
+    # visualize_topics()
+    dump_gkg_to_gpkg()
 
     # Analysis
     # doc_test_read()
